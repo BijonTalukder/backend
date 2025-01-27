@@ -1,0 +1,149 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum PaymentStatus {
+  pending
+  paid
+  failed
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  user
+  seller
+  admin
+}
+
+model User {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email     String   @unique
+  password  String
+  phone     String?  @unique
+  role      Role
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Category {
+  id           String  @id @default(auto()) @map("_id") @db.ObjectId
+  categoryName String  @unique
+  status       Boolean
+  imageUrl     String
+
+  createdById String   @db.ObjectId
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  products    Product[]
+}
+
+model Attributes {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  value     Json    
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Brand {
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  brandName String  @unique
+  status    Boolean
+  imageUrl  String
+
+  createdById String   @db.ObjectId
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  products Product[]
+}
+
+model Product {
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  name            String
+  description     String
+  productSubtitle String
+  price           Float
+  imageUrl        Json
+  weight          String
+  material        String
+  thickness       String
+  elasticity      String
+  breathability   String
+  categoryId      String    @db.ObjectId
+  brandId         String    @db.ObjectId
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  topSale         Boolean   @default(false)
+  newArrival      Boolean   @default(false)
+  status          Boolean   @default(true)
+  availability    Boolean   @default(true)
+  variants        Variant[]
+  category        Category  @relation(fields: [categoryId], references: [id])
+  brand           Brand     @relation(fields: [brandId], references: [id])
+}
+
+
+
+model Variant {
+  id         String @id @default(auto()) @map("_id") @db.ObjectId
+  productId  String @db.ObjectId
+  attributes Json
+  stock      Int
+  price      Float?
+  priceTiers Json
+  imageUrl   Json
+
+  sku       String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  product   Product  @relation(fields: [productId], references: [id])
+}
+
+enum OrderStatus {
+  pending
+  processing
+  shipped
+  delivered
+  cancelled
+}
+
+model Order {
+  id              String        @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String        @db.ObjectId
+  orderTotal      Float
+  paymentStatus   PaymentStatus
+  shippingAddress String
+  billingAddress  String
+  orderStatus     OrderStatus   @default(pending)
+  orderItems      Json
+  deliveryFee     Float         @default(0)
+  taxAmount       Float         @default(0)
+  transactionId  String          @unique
+}
+
+
+model Slider {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String   @db.String           
+  description String?  @db.String          
+  imageUrl    String   @db.String           
+  linkUrl     String?  @db.String           
+  position    Int      @default(0)          
+  isActive    Boolean  @default(true)       
+  createdAt   DateTime @default(now())      
+  updatedAt   DateTime @updatedAt      
+}
+model Subscribe {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  email         String   @unique @db.String
+  isSubscribed  Boolean  @default(true)
+  subscribedAt  DateTime @default(now())
+  unsubscribedAt DateTime? @db.Date
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
