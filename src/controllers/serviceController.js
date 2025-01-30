@@ -1,4 +1,6 @@
-const ServiceService = require('../services/ServiceService');
+// const ServiceService = require('../services/ServiceService');
+
+const ServiceService = require("../services/Service/serviceService");
 
 class ServiceController {
   constructor(prismaClient) {

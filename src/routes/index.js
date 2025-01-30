@@ -21,6 +21,8 @@ const SubscribeService = require('../services/Subscribe/SubscribeService');
 const SubscribeController = require('../controllers/subscribeController');
 const UserService = require('../services/User/userService');
 const UserController = require('../controllers/userController');
+const serviceRouter = require('./serviceRouter');
+const serviceListRouter = require('./serviceListRouter');
 
 const router = express.Router();
 
@@ -245,5 +247,8 @@ router.get("/subscriptions/:email", (req, res, next) => {
     const subscribeController = new SubscribeController(subscribeService);
     subscribeController.getSubscriptionByEmail(req, res, next)
 })
+router.use('/services',serviceRouter);
+router.use('/services-list',serviceListRouter);
+
 
 module.exports = router;
