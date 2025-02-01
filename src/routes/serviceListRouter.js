@@ -1,6 +1,6 @@
 const express = require('express');
 
-const { PrismaClient } = require('@prisma/client/extension');
+const { PrismaClient } = require('@prisma/client');
 const ServiceListController = require('../controllers/serviceListController');
 const prisma = new PrismaClient();
 

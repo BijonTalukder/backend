@@ -1,5 +1,5 @@
 const express = require('express');
-const { PrismaClient } = require('@prisma/client');
+// const { PrismaClient } = require('@prisma/client');
 const AdminService = require('../services/Admin/adminService');
 const AdminController = require('../controllers/adminController');
 const AuthService = require('../services/Authentication/AuthService');
@@ -23,10 +23,11 @@ const UserService = require('../services/User/userService');
 const UserController = require('../controllers/userController');
 const serviceRouter = require('./serviceRouter');
 const serviceListRouter = require('./serviceListRouter');
+const { PrismaClient } = require('@prisma/client');
 
 const router = express.Router();
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient()
 const adminService = new AdminService(prisma);
 const adminController = new AdminController(adminService);
 const hasher = new BcryptHasher()
