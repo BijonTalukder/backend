@@ -148,26 +148,29 @@ model Subscribe {
   updatedAt     DateTime @updatedAt
 }
 
-model Service{
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-  title String 
-  status Boolean @default(true)
-  imageUrl String?
+model Service {
+  id        String      @id @default(auto()) @map("_id") @db.ObjectId
+  title     String
+  status    Boolean     @default(true)
+  imageUrl  String?
+  serviceList ServiceList[] @relation("ServiceToServiceList")  // This defines the relationship
 }
 
-model ServiceList{
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-  title String
-  shortDescription String?
-  description String?
-  phoneNumber String?
-  type String
-  status Boolean
-  url String
-  isInternalUrl Boolean
-  imageUrl String
-  dynamicFields Json?
+model ServiceList {
+  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+  serviceId         String   @db.ObjectId
+  title             String
+  shortDescription  String?
+  description       String?
+  phoneNumber       String?
+  type              String
+  status            Boolean
+  url               String
+  isInternalUrl     Boolean
+  imageUrl          String
+  dynamicFields     Json?
 
+  service           Service  @relation("ServiceToServiceList", fields: [serviceId], references: [id])  // Relating to Service model
 }
 
 model News {

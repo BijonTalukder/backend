@@ -8,7 +8,7 @@ const serviceListController = new ServiceListController(prisma)
 // const serviceListController = new ServiceController(prisma);
 
 const serviceListRouter = express.Router();
-serviceListRouter.post('/', serviceListController.createServiceList.bind(serviceListController));
+serviceListRouter.post('/create', serviceListController.createServiceList.bind(serviceListController));
 serviceListRouter.get('/', serviceListController.getAllServiceLists.bind(serviceListController));
 serviceListRouter.get('/:id', serviceListController.getServiceListById.bind(serviceListController));
 serviceListRouter.put('/:id', serviceListController.updateServiceList.bind(serviceListController));
