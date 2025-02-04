@@ -13,12 +13,19 @@ class ServiceRepository {
       return await this.prisma.service.findUnique({
         where: {
           id: serviceId,
+          include:{
+            serviceList:true
+          }
         },
       });
     }
   
     async getAllServices() {
-      return await this.prisma.service.findMany();
+      return await this.prisma.service.findMany({
+        include:{
+          serviceList:true
+        }
+      });
     }
   
     async updateService(serviceId, updatedData) {
