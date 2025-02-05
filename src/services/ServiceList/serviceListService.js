@@ -37,6 +37,10 @@ class ServiceListService {
     const deletedServiceList = await this.serviceRepository.deleteServiceList(serviceListId);
     return deletedServiceList;
   }
+  async getAllServicesListByService(serviceListId) {
+    const deletedServiceList = await this.serviceRepository.getAllServicesListByService(serviceListId);
+    return deletedServiceList;
+  }
 }
 
 module.exports = ServiceListService;
