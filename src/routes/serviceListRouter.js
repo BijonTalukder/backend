@@ -13,5 +13,6 @@ serviceListRouter.get('/', serviceListController.getAllServiceLists.bind(service
 serviceListRouter.get('/:id', serviceListController.getServiceListById.bind(serviceListController));
 serviceListRouter.put('/:id', serviceListController.updateServiceList.bind(serviceListController));
 serviceListRouter.delete('/:id', serviceListController.deleteServiceList.bind(serviceListController));
+serviceListRouter.get('/services/:id', serviceListController.getAllServicesListByService.bind(serviceListController));
 
 module.exports = serviceListRouter;
