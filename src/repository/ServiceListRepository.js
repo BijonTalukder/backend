@@ -37,6 +37,15 @@ class ServiceListRepository {
             },
         });
     }
+    async getAllServicesListByService(serviceId){
+        return await this.prisma.serviceList.findMany(
+            {
+                where:{
+                    serviceId:serviceId
+                }
+            }
+        )
+    }
 }
 
 module.exports = ServiceListRepository;

@@ -61,6 +61,19 @@ class ServiceListController {
       next(error); // Pass error to error-handling middleware
     }
   }
+  async getAllServicesListByService(req,res,next){
+    try {
+      const serviceId = req.params.id;
+      const ServiceList = await this.serviceListService.getAllServicesListByService(serviceId);
+      res.status(200).json({
+        success: true,
+        message: 'ServiceList Fetched successfully',
+        data: ServiceList,
+      });
+    } catch (error) {
+next(error)      
+    }
+  }
 }
 
 module.exports = ServiceListController;

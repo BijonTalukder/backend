@@ -36,6 +36,7 @@ class ServiceController {
 
   async getAllServices(req, res, next) {
     try {
+      console.log("service api call")
       const services = await this.serviceService.getAllServices();
       res.status(200).json({
         success: true,
@@ -74,6 +75,8 @@ class ServiceController {
       next(error);
     }
   }
+
+  
 }
 
 module.exports = ServiceController;
