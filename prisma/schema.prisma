@@ -165,6 +165,7 @@ model ServiceList {
   phoneNumber       String?
   type              String
   status            Boolean? @default(true)
+  isClikableLink    Boolean
   url               String
   isInternalUrl     Boolean
   imageUrl          String
