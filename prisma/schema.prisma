@@ -154,6 +154,8 @@ model Service {
   status    Boolean     @default(true)
   type String @default("card")
   imageUrl  String?
+  isLottie Boolean @default(false)
+  bannerImage String[]
   serviceList ServiceList[] @relation("ServiceToServiceList")  // This defines the relationship
 }
 
