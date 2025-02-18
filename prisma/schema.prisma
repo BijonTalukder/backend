@@ -185,7 +185,10 @@ model News {
   slug           String   @unique 
   tags           String[] 
   isBreakingNews Boolean @default(false)
-  thumbnailUrl   String   
+  thumbnailUrl   String?   
+  type             String @default("rss")
+  newsUrl         String?
+  isExternalNews  Boolean@default(true)
   imageUrl       String? 
   videoUrl       String? 
   videoEmbed     String? 
