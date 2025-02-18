@@ -32,20 +32,63 @@ app.use((err, req, res, next) => {
 
 const parser = new RSSParser();
 
-const fetchRSSFeed = async () => {
-  try {
-    const feed = await parser.parseURL('https://example.com/rss'); // Replace with actual RSS feed URL
-    feed.items.forEach(item => {
-      console.log(item.title); // Display title
-      console.log(item.link);  // Display article link
-      // You can save this data to your database or display it in your app
-    });
-  } catch (error) {
-    console.error('Error fetching RSS feed:', error);
+
+const RSS_FEEDS = [
+  'https://www.prothomalo.com/feed',
+  // 'https://rss.cnn.com/rss/edition.rss',
+  'https://feeds.bbci.co.uk/news/rss.xml',
+  'https://www.kalerkantho.com/rss.xml',
+  'https://www.jagonews24.com/rss/rss.xml',
+  'https://www.jugantor.com/feed/rss.xml',
+  'https://www.banglanews24.com/rss/rss.xml',
+  'https://bdnews24.com/?widgetName=rssfeed&widgetId=1150&getXmlFeed=true',
+  '	http://www.bd24live.com/feed',
+  'https://www.thedailystar.net/frontpage/rss.xml'
+
+];
+const fetchRSSFeeds = async () => {
+  for (const feedUrl of RSS_FEEDS) {
+    try {
+      const feed = await parser.parseURL(feedUrl);
+
+      for (const item of feed.items) {
+        // Generate a unique slug from title
+        const slug = item.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+
+        // Check if news already exists
+        const existingNews = await prisma.news.findUnique({
+          where: { slug },
+        });
+
+        if (!existingNews) {
+          await prisma.news.create({
+            data: {
+              title: item.title,
+              shortDescription: item.contentSnippet || item.summary || null,
+              description: item.content || item.description || null,
+              slug,
+              tags: [],
+              isBreakingNews: false,
+              thumbnailUrl: item.enclosure?.url || null,
+              type: 'rss',
+              newsUrl: item.link,
+              isExternalNews: true,
+              imageUrl: item.enclosure?.url || null,
+              hasVideo: false,
+              authorName: item.creator || item.author || null,
+              publishedAt: new Date(item.pubDate || Date.now()),
+            },
+          });
+        }
+      }
+    } catch (error) {
+      console.error(`Error fetching RSS feed from ${feedUrl}:`, error);
+    }
   }
 };
 
-setInterval(fetchRSSFeed, 60 * 60 * 1000); 
+// ✅ Call function AFTER defining it
+fetchRSSFeeds(); 
 
 // Database connection
 (async () => {
