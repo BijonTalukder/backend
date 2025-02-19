@@ -1,6 +1,6 @@
 class CategoryService {
     constructor(prismaClient) {
-        this.prisma = prismaClient;  // Initialize Prisma Client
+        this.prisma = prismaClient; 
     }
 
     // Create a new category
