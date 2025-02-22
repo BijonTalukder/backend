@@ -197,4 +197,11 @@ model News {
   publishedAt    DateTime @default(now()) 
   like           Int      @default(0)
   comment        Int      @default(0) 
+
+  aiSummary         String?
+  aiCategory        String?
+  aiImportanceScore Int?
+  imageQuality      Float?
+  imageAltText      String?
+  lastProcessed     DateTime
 }

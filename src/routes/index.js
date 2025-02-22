@@ -264,9 +264,7 @@ const baseUploadDir = "uploads";
 if (!fs.existsSync(baseUploadDir)) {
   fs.mkdirSync(baseUploadDir, { recursive: true });
 }
-// Function to process images and generate 3 sizes in WebP
-// Function to process images and generate 3 sizes in WebP
-// Function to process images and generate 3 sizes in WebP
+
 const processImage = async (buffer, originalname, folderPath, folderUrl) => {
     const timestamp = Date.now();
     const baseName = path.parse(originalname).name;
@@ -345,7 +343,54 @@ const processImage = async (buffer, originalname, folderPath, folderUrl) => {
       res.status(500).json({ message: "Error processing images" });
     }
   });
-  
+// const IMAGE_DIR = path.join(__dirname, 'uploads');
+
+// const baseUploadDir = path.join(__dirname, "../../uploads"); // Adjust path to move out of src/routes
+
+router.get("/imageapi/:imagename", async (req, res) => {
+    const { imagename } = req.params;
+    let { width, height, quality, format, folder } = req.query;
+
+    console.log("Received Query Params:", { width, height, quality, format, folder });
+
+    // Default folder if not provided
+    folder = folder || "default";
+
+    // Convert query parameters to integers
+    width = width ? parseInt(width) : null;
+    height = height ? parseInt(height) : null;
+    quality = quality ? parseInt(quality) : 90; // Default quality 90
+    format = format ? format.toLowerCase() : "jpeg"; // Default format is JPEG
+
+    // Construct the correct dynamic image path
+    const imagePath = path.join(baseUploadDir, folder, imagename);
+
+    console.log("Checking file at:", imagePath);
+
+    // Check if image exists
+    if (!fs.existsSync(imagePath)) {
+        return res.status(404).send("Image not found");
+    }
+
+    try {
+        let image = sharp(imagePath).resize(width, height);
+
+        // Convert image based on requested format
+        if (format === "webp") {
+            res.setHeader("Content-Type", "image/webp");
+            image = image.webp({ quality });
+        } else {
+            res.setHeader("Content-Type", "image/jpeg");
+            image = image.jpeg({ quality });
+        }
+
+        image.pipe(res);
+    } catch (error) {
+        console.error("Error processing image:", error);
+        res.status(500).send("Error processing image");
+    }
+});
+
 
 
 
