@@ -52,7 +52,7 @@ const RSS_FEEDS = [
   "http://www.bd24live.com/feed",
   "https://www.thedailystar.net/frontpage/rss.xml",
 ];
-// const openai = new OpenAI({ apiKey: ""});
+// const openai = new OpenAI({ apiKey: process.env.sd});
 // AI-enhanced content processing
 async function enhanceContentWithAI(content) {
   try {
