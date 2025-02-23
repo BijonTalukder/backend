@@ -258,6 +258,7 @@ router.use('/services-list',serviceListRouter);
 router.use("/news",newsRouter);
 
 
+
 // const storage = multer.memoryStorage();
 // const upload = multer({ storage });
 // const baseUploadDir = "uploads";
@@ -390,6 +391,7 @@ router.use("/news",newsRouter);
 //         res.status(500).send("Error processing image");
 //     }
 // });
+
 
 
 
