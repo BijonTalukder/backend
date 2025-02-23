@@ -9,9 +9,12 @@ const swaggerUi = require('swagger-ui-express');
 const port = process.env.PORT || 5000;
 const prisma = new PrismaClient();
 const RSSParser = require('rss-parser');
+<<<<<<< HEAD
 const { default: axios } = require('axios');
  const cheerio = require("cheerio");
  const { Configuration, OpenAIApi, default: OpenAI } = require('openai');
+=======
+>>>>>>> 0413375f42eddbd3a05fb77898403a4dbd2d5856
 
 // Middleware
 app.use(cors());
@@ -36,6 +39,7 @@ app.use((err, req, res, next) => {
 const parser = new RSSParser();
 
 
+<<<<<<< HEAD
 // Initialize OpenAI
 // const configuration = new Configuration({
 //   apiKey: process.env.OPENAI_API_KEY
@@ -121,10 +125,26 @@ async function enhanceImageProcessing(imageUrl) {
 }
 
 // Enhanced RSS feed fetcher
+=======
+const RSS_FEEDS = [
+  'https://www.prothomalo.com/feed',
+  // 'https://rss.cnn.com/rss/edition.rss',
+  'https://feeds.bbci.co.uk/news/rss.xml',
+  'https://www.kalerkantho.com/rss.xml',
+  'https://www.jagonews24.com/rss/rss.xml',
+  'https://www.jugantor.com/feed/rss.xml',
+  'https://www.banglanews24.com/rss/rss.xml',
+  'https://bdnews24.com/?widgetName=rssfeed&widgetId=1150&getXmlFeed=true',
+  '	http://www.bd24live.com/feed',
+  'https://www.thedailystar.net/frontpage/rss.xml'
+
+];
+>>>>>>> 0413375f42eddbd3a05fb77898403a4dbd2d5856
 const fetchRSSFeeds = async () => {
   for (const feedUrl of RSS_FEEDS) {
     try {
       const feed = await parser.parseURL(feedUrl);
+<<<<<<< HEAD
       
       for (const item of feed.items) {
         const slug = item.title.toLowerCase()
@@ -185,10 +205,46 @@ const fetchRSSFeeds = async () => {
       }
     } catch (error) {
       console.error(`❌ Error processing feed ${feedUrl}:`, error);
+=======
+
+      for (const item of feed.items) {
+        // Generate a unique slug from title
+        const slug = item.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+
+        // Check if news already exists
+        const existingNews = await prisma.news.findUnique({
+          where: { slug },
+        });
+
+        if (!existingNews) {
+          await prisma.news.create({
+            data: {
+              title: item.title,
+              shortDescription: item.contentSnippet || item.summary || null,
+              description: item.content || item.description || null,
+              slug,
+              tags: [],
+              isBreakingNews: false,
+              thumbnailUrl: item.enclosure?.url || null,
+              type: 'rss',
+              newsUrl: item.link,
+              isExternalNews: true,
+              imageUrl: item.enclosure?.url || null,
+              hasVideo: false,
+              authorName: item.creator || item.author || null,
+              publishedAt: new Date(item.pubDate || Date.now()),
+            },
+          });
+        }
+      }
+    } catch (error) {
+      console.error(`Error fetching RSS feed from ${feedUrl}:`, error);
+>>>>>>> 0413375f42eddbd3a05fb77898403a4dbd2d5856
     }
   }
 };
 
+<<<<<<< HEAD
 // Periodic content refresh and update
 async function updateExistingContent() {
   const oldNews = await prisma.news.findMany({
@@ -222,6 +278,21 @@ async function updateExistingContent() {
 
 // Initial run
 // fetchRSSFeeds();
+=======
+// ✅ Call function AFTER defining it
+// fetchRSSFeeds(); 
+
+
+
+
+
+
+
+
+
+
+
+>>>>>>> 0413375f42eddbd3a05fb77898403a4dbd2d5856
 
 
 
