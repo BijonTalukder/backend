@@ -9,9 +9,12 @@ const swaggerUi = require('swagger-ui-express');
 const port = process.env.PORT || 5000;
 const prisma = new PrismaClient();
 const RSSParser = require('rss-parser');
+<<<<<<< HEAD
 const { default: axios } = require('axios');
  const cheerio = require("cheerio");
  const { Configuration, OpenAIApi, default: OpenAI } = require('openai');
+=======
+>>>>>>> c6f5c80 (update)
 
 // Middleware
 app.use(cors());
@@ -35,6 +38,7 @@ app.use((err, req, res, next) => {
 
 const parser = new RSSParser();
 
+<<<<<<< HEAD
 
 // Initialize OpenAI
 // const configuration = new Configuration({
@@ -231,6 +235,22 @@ async function updateExistingContent() {
 
 
 
+=======
+const fetchRSSFeed = async () => {
+  try {
+    const feed = await parser.parseURL('https://example.com/rss'); // Replace with actual RSS feed URL
+    feed.items.forEach(item => {
+      console.log(item.title); // Display title
+      console.log(item.link);  // Display article link
+      // You can save this data to your database or display it in your app
+    });
+  } catch (error) {
+    console.error('Error fetching RSS feed:', error);
+  }
+};
+
+setInterval(fetchRSSFeed, 60 * 60 * 1000); 
+>>>>>>> c6f5c80 (update)
 
 // Database connection
 (async () => {
