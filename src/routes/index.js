@@ -258,138 +258,138 @@ router.use('/services-list',serviceListRouter);
 router.use("/news",newsRouter);
 
 
-const storage = multer.memoryStorage();
-const upload = multer({ storage });
-const baseUploadDir = "uploads";
-if (!fs.existsSync(baseUploadDir)) {
-  fs.mkdirSync(baseUploadDir, { recursive: true });
-}
+// const storage = multer.memoryStorage();
+// const upload = multer({ storage });
+// const baseUploadDir = "uploads";
+// if (!fs.existsSync(baseUploadDir)) {
+//   fs.mkdirSync(baseUploadDir, { recursive: true });
+// }
 
-const processImage = async (buffer, originalname, folderPath, folderUrl) => {
-    const timestamp = Date.now();
-    const baseName = path.parse(originalname).name;
+// const processImage = async (buffer, originalname, folderPath, folderUrl) => {
+//     const timestamp = Date.now();
+//     const baseName = path.parse(originalname).name;
   
-    // Define file names for different sizes
+//     // Define file names for different sizes
 
-    const extraLargeFileName = `extra-large_${timestamp}-${baseName}.webp`;
-  const largeFileName = `large_${timestamp}-${baseName}.webp`;
-  const mediumFileName = `medium_${timestamp}-${baseName}.webp`;
-  const smallFileName = `small_${timestamp}-${baseName}.webp`;
+//     const extraLargeFileName = `extra-large_${timestamp}-${baseName}.webp`;
+//   const largeFileName = `large_${timestamp}-${baseName}.webp`;
+//   const mediumFileName = `medium_${timestamp}-${baseName}.webp`;
+//   const smallFileName = `small_${timestamp}-${baseName}.webp`;
 
 
-    const extraLargeFilePath = path.join(folderPath, "extra-large", extraLargeFileName);
-  const largeFilePath = path.join(folderPath, "large", largeFileName);
-  const mediumFilePath = path.join(folderPath, "medium", mediumFileName);
-  const smallFilePath = path.join(folderPath, "small", smallFileName);
+//     const extraLargeFilePath = path.join(folderPath, "extra-large", extraLargeFileName);
+//   const largeFilePath = path.join(folderPath, "large", largeFileName);
+//   const mediumFilePath = path.join(folderPath, "medium", mediumFileName);
+//   const smallFilePath = path.join(folderPath, "small", smallFileName);
   
-    // Create the directories for each size
-    fs.mkdirSync(path.join(folderPath, "extra-large"), { recursive: true });
-  fs.mkdirSync(path.join(folderPath, "large"), { recursive: true });
-  fs.mkdirSync(path.join(folderPath, "medium"), { recursive: true });
-  fs.mkdirSync(path.join(folderPath, "small"), { recursive: true });
+//     // Create the directories for each size
+//     fs.mkdirSync(path.join(folderPath, "extra-large"), { recursive: true });
+//   fs.mkdirSync(path.join(folderPath, "large"), { recursive: true });
+//   fs.mkdirSync(path.join(folderPath, "medium"), { recursive: true });
+//   fs.mkdirSync(path.join(folderPath, "small"), { recursive: true });
   
-    // Process images with different sizes
-    await Promise.all([
-        sharp(buffer).resize(680).toFormat("webp", { quality: 100, lossless: false }).toFile(extraLargeFilePath),
-        sharp(buffer).resize(450).toFormat("webp", { quality: 100, lossless: false }).toFile(largeFilePath),
-        sharp(buffer).resize(350).toFormat("webp", { quality: 100, lossless: false }).toFile(mediumFilePath),
-        sharp(buffer).resize(250).toFormat("webp", { quality: 100, lossless: false }).toFile(smallFilePath),
-    ]);
+//     // Process images with different sizes
+//     await Promise.all([
+//         sharp(buffer).resize(680).toFormat("webp", { quality: 100, lossless: false }).toFile(extraLargeFilePath),
+//         sharp(buffer).resize(450).toFormat("webp", { quality: 100, lossless: false }).toFile(largeFilePath),
+//         sharp(buffer).resize(350).toFormat("webp", { quality: 100, lossless: false }).toFile(mediumFilePath),
+//         sharp(buffer).resize(250).toFormat("webp", { quality: 100, lossless: false }).toFile(smallFilePath),
+//     ]);
   
-    return {
-        extraLarge: { filename: extraLargeFileName, imageUrl: `${folderUrl}/extra-large/${extraLargeFileName}` },
-        large: { filename: largeFileName, imageUrl: `${folderUrl}/large/${largeFileName}` },
-        medium: { filename: mediumFileName, imageUrl: `${folderUrl}/medium/${mediumFileName}` },
-        small: { filename: smallFileName, imageUrl: `${folderUrl}/small/${smallFileName}` },
-      };
-  };
+//     return {
+//         extraLarge: { filename: extraLargeFileName, imageUrl: `${folderUrl}/extra-large/${extraLargeFileName}` },
+//         large: { filename: largeFileName, imageUrl: `${folderUrl}/large/${largeFileName}` },
+//         medium: { filename: mediumFileName, imageUrl: `${folderUrl}/medium/${mediumFileName}` },
+//         small: { filename: smallFileName, imageUrl: `${folderUrl}/small/${smallFileName}` },
+//       };
+//   };
   
-  router.post("/upload", upload.any(), async (req, res) => {
-    try {
-      let folder = req.body.folder || "default"; // Default folder if none provided
-      const title = req.body.title;
+//   router.post("/upload", upload.any(), async (req, res) => {
+//     try {
+//       let folder = req.body.folder || "default"; // Default folder if none provided
+//       const title = req.body.title;
   
-      console.log("Title:", title);
+//       console.log("Title:", title);
   
-      // Create folder inside 'uploads' directory
-      const folderPath = path.join(baseUploadDir, folder);
-      if (!fs.existsSync(folderPath)) {
-        fs.mkdirSync(folderPath, { recursive: true });
-      }
+//       // Create folder inside 'uploads' directory
+//       const folderPath = path.join(baseUploadDir, folder);
+//       if (!fs.existsSync(folderPath)) {
+//         fs.mkdirSync(folderPath, { recursive: true });
+//       }
   
-      // Folder URL (Ensuring it's a proper URL format)
-      const folderUrl = `${req.protocol}://${req.get("host")}/uploads/${folder}`;
+//       // Folder URL (Ensuring it's a proper URL format)
+//       const folderUrl = `${req.protocol}://${req.get("host")}/uploads/${folder}`;
   
-      let filesUploaded = [];
+//       let filesUploaded = [];
   
-      // Handle multiple files
-      if (req.files && req.files.length > 0) {
-        const processedFiles = await Promise.all(
-          req.files.map(async (file) => {
-            const processedFile = await processImage(file.buffer, file.originalname, folderPath, folderUrl);
-            return processedFile;
-          })
-        );
-        filesUploaded.push(...processedFiles);
-      }
+//       // Handle multiple files
+//       if (req.files && req.files.length > 0) {
+//         const processedFiles = await Promise.all(
+//           req.files.map(async (file) => {
+//             const processedFile = await processImage(file.buffer, file.originalname, folderPath, folderUrl);
+//             return processedFile;
+//           })
+//         );
+//         filesUploaded.push(...processedFiles);
+//       }
   
-      res.json({ 
-        status: "Success",
-        folderUrl: folderUrl,
-        images: filesUploaded,
-      });
-    } catch (error) {
-      console.error("Error processing images:", error);
-      res.status(500).json({ message: "Error processing images" });
-    }
-  });
-// const IMAGE_DIR = path.join(__dirname, 'uploads');
+//       res.json({ 
+//         status: "Success",
+//         folderUrl: folderUrl,
+//         images: filesUploaded,
+//       });
+//     } catch (error) {
+//       console.error("Error processing images:", error);
+//       res.status(500).json({ message: "Error processing images" });
+//     }
+//   });
+// // const IMAGE_DIR = path.join(__dirname, 'uploads');
 
-// const baseUploadDir = path.join(__dirname, "../../uploads"); // Adjust path to move out of src/routes
+// // const baseUploadDir = path.join(__dirname, "../../uploads"); // Adjust path to move out of src/routes
 
-router.get("/imageapi/:imagename", async (req, res) => {
-    const { imagename } = req.params;
-    let { width, height, quality, format, folder } = req.query;
+// router.get("/imageapi/:imagename", async (req, res) => {
+//     const { imagename } = req.params;
+//     let { width, height, quality, format, folder } = req.query;
 
-    console.log("Received Query Params:", { width, height, quality, format, folder });
+//     console.log("Received Query Params:", { width, height, quality, format, folder });
 
-    // Default folder if not provided
-    folder = folder || "default";
+//     // Default folder if not provided
+//     folder = folder || "default";
 
-    // Convert query parameters to integers
-    width = width ? parseInt(width) : null;
-    height = height ? parseInt(height) : null;
-    quality = quality ? parseInt(quality) : 90; // Default quality 90
-    format = format ? format.toLowerCase() : "jpeg"; // Default format is JPEG
+//     // Convert query parameters to integers
+//     width = width ? parseInt(width) : null;
+//     height = height ? parseInt(height) : null;
+//     quality = quality ? parseInt(quality) : 90; // Default quality 90
+//     format = format ? format.toLowerCase() : "jpeg"; // Default format is JPEG
 
-    // Construct the correct dynamic image path
-    const imagePath = path.join(baseUploadDir, folder, imagename);
+//     // Construct the correct dynamic image path
+//     const imagePath = path.join(baseUploadDir, folder, imagename);
 
-    console.log("Checking file at:", imagePath);
+//     console.log("Checking file at:", imagePath);
 
-    // Check if image exists
-    if (!fs.existsSync(imagePath)) {
-        return res.status(404).send("Image not found");
-    }
+//     // Check if image exists
+//     if (!fs.existsSync(imagePath)) {
+//         return res.status(404).send("Image not found");
+//     }
 
-    try {
-        let image = sharp(imagePath).resize(width, height);
+//     try {
+//         let image = sharp(imagePath).resize(width, height);
 
-        // Convert image based on requested format
-        if (format === "webp") {
-            res.setHeader("Content-Type", "image/webp");
-            image = image.webp({ quality });
-        } else {
-            res.setHeader("Content-Type", "image/jpeg");
-            image = image.jpeg({ quality });
-        }
+//         // Convert image based on requested format
+//         if (format === "webp") {
+//             res.setHeader("Content-Type", "image/webp");
+//             image = image.webp({ quality });
+//         } else {
+//             res.setHeader("Content-Type", "image/jpeg");
+//             image = image.jpeg({ quality });
+//         }
 
-        image.pipe(res);
-    } catch (error) {
-        console.error("Error processing image:", error);
-        res.status(500).send("Error processing image");
-    }
-});
+//         image.pipe(res);
+//     } catch (error) {
+//         console.error("Error processing image:", error);
+//         res.status(500).send("Error processing image");
+//     }
+// });
 
 
 

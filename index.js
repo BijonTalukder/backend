@@ -217,11 +217,11 @@ async function updateExistingContent() {
 }
 
 // Schedule periodic updates
-setInterval(fetchRSSFeeds, 30 * 60 * 1000); // Every 30 minutes
-setInterval(updateExistingContent, 24 * 60 * 60 * 1000); // Daily updates
+// setInterval(fetchRSSFeeds, 30 * 60 * 1000); // Every 30 minutes
+// setInterval(updateExistingContent, 24 * 60 * 60 * 1000); // Daily updates
 
 // Initial run
-fetchRSSFeeds();
+// fetchRSSFeeds();
 
 
 
