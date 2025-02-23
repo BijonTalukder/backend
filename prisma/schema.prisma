@@ -205,3 +205,14 @@ model News {
   imageAltText      String?
   lastProcessed     DateTime
 }
+model BreakingNews {
+    id        String   @id @default(auto()) @map("_id") @db.ObjectId
+    newsTitle String
+    content   String? // Optional news content
+    status    Boolean @default(true)
+    order     Int     @unique
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([status]) 
+}

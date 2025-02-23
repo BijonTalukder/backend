@@ -29,6 +29,7 @@ const sharp =require("sharp");
 const fs= require("fs");
 const path= require("path");
 const newsRouter = require('./newsRouter');
+const breakingNewsRouter = require('./breakingNewsRouter');
 const router = express.Router();
 
 const prisma = new PrismaClient()
@@ -256,7 +257,7 @@ router.use('/services',serviceRouter);
 router.use('/services-list',serviceListRouter);
 
 router.use("/news",newsRouter);
-
+router.use("/breaking-news",breakingNewsRouter);
 
 // const storage = multer.memoryStorage();
 // const upload = multer({ storage });
