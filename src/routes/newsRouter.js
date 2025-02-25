@@ -18,4 +18,5 @@ newsRouter.put('/:id', (req, res, next) => newsController.updateNews(req, res, n
 newsRouter.delete('/:id', (req, res, next) => newsController.deleteNews(req, res, next));
 
 
+
 module.exports = newsRouter;
