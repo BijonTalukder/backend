@@ -155,6 +155,8 @@ model Service {
   type String @default("card")
   imageUrl  String?
   isLottie Boolean @default(false)
+    isClikableLink Boolean @default(false)
+  url               String
   bannerImage String[]
   serviceList ServiceList[] @relation("ServiceToServiceList")  // This defines the relationship
 }
@@ -208,7 +210,7 @@ model News {
 model BreakingNews {
     id        String   @id @default(auto()) @map("_id") @db.ObjectId
     newsTitle String
-    content   String? // Optional news content
+    content   String? 
     status    Boolean @default(true)
     order     Int     @unique
     createdAt DateTime @default(now())
