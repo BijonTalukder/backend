@@ -156,7 +156,7 @@ model Service {
   imageUrl  String?
   isLottie Boolean @default(false)
     isClikableLink Boolean @default(false)
-  url               String
+  url               String?
   bannerImage String[]
   serviceList ServiceList[] @relation("ServiceToServiceList")  // This defines the relationship
 }
