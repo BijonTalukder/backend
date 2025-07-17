@@ -34,7 +34,9 @@ class ServiceListService {
 
   // Method to delete a ServiceList
   async deleteServiceList(serviceListId) {
+    console.log(serviceListId)
     const deletedServiceList = await this.serviceRepository.deleteServiceList(serviceListId);
+    console.log(deletedServiceList);
     return deletedServiceList;
   }
   async getAllServicesListByService(serviceListId) {

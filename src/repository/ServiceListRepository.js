@@ -31,17 +31,23 @@ class ServiceListRepository {
     }
 
     async deleteServiceList(serviceListId) {
+        const existing = await this.prisma.serviceList.findUnique({
+            where: { serviceId: serviceListId }
+        });
+        if (!existing) {
+            throw new Error('ServiceList not found');
+        }
         return await this.prisma.serviceList.delete({
             where: {
-                id: serviceListId,
+                serviceId: serviceListId,
             },
         });
     }
-    async getAllServicesListByService(serviceId){
-        return await this.prisma.serviceList.findMany(
+    async getAllServicesListByService(serviceId) {
+        return await prisma.serviceList.findMany(
             {
-                where:{
-                    serviceId:serviceId
+                where: {
+                    serviceId: serviceId
                 }
             }
         )

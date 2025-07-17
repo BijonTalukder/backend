@@ -205,7 +205,7 @@ model News {
   aiImportanceScore Int?
   imageQuality      Float?
   imageAltText      String?
-  lastProcessed     DateTime
+  lastProcessed     DateTime?
 }
 model BreakingNews {
     id        String   @id @default(auto()) @map("_id") @db.ObjectId
