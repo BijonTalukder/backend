@@ -48,7 +48,7 @@ class ServiceListRepository {
         });
     }
     async getAllServicesListByService(serviceId) {
-        return await prisma.serviceList.findMany(
+        return await this.prisma.serviceList.findMany(
             {
                 where: {
                     serviceId: serviceId
