@@ -5,7 +5,6 @@ const ServiceListController = require('../controllers/serviceListController');
 const prisma = new PrismaClient();
 
 const serviceListController = new ServiceListController(prisma)
-// const serviceListController = new ServiceController(prisma);
 
 const serviceListRouter = express.Router();
 serviceListRouter.post('/create', serviceListController.createServiceList.bind(serviceListController));

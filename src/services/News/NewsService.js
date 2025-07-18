@@ -1,6 +1,6 @@
 class NewsService {
     constructor(prismaClient) {
-        this.prisma = prismaClient;  // Prisma client instance
+        this.prisma = prismaClient; 
     }
 
     // Create News

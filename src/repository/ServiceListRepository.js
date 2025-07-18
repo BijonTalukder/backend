@@ -1,5 +1,7 @@
 class ServiceListRepository {
     constructor(prismaClient) {
+        console.log("ServiceListRepository initialized with Prisma Client", prismaClient);
+        
         this.prisma = prismaClient;
     }
 
@@ -18,6 +20,8 @@ class ServiceListRepository {
     }
 
     async getAllServiceLists() {
+        console.log(this.prisma);
+        
         return await this.prisma.serviceList.findMany();
     }
 

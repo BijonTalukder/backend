@@ -1,6 +1,5 @@
 const express = require('express');
-// const NewsService = require('../services/News/NewsService');
-// const NewsController = require('../controllers/newsController');
+
 const { PrismaClient } = require('@prisma/client');
 const NewsService = require('../services/News/NewsService');
 const NewsController = require('../controllers/newsController');

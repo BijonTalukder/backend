@@ -1,9 +1,9 @@
-// const ServiceListService = require("../../services/ServiceListService");
-
 const ServiceListService = require("../services/ServiceList/serviceListService");
 
 class ServiceListController {
   constructor(prismaClient) {
+    console.log("ServiceListController initialized with Prisma Client", prismaClient);
+    
     this.serviceListService = new ServiceListService(prismaClient);
   }
 

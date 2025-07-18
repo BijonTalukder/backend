@@ -2,6 +2,7 @@ const ServiceListRepository = require("../../repository/ServiceListRepository");
 
 class ServiceListService {
   constructor(prismaClient) {
+    console.log("ServiceListService initialized with Prisma Client", prismaClient);
     this.serviceRepository = new ServiceListRepository(prismaClient);
   }
 
