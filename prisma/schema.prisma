@@ -178,6 +178,21 @@ model ServiceList {
 
   service           Service  @relation("ServiceToServiceList", fields: [serviceId], references: [id])  // Relating to Service model
 }
+model TouristSpot {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  title           String
+  slug            String   @unique
+  location        String
+  author          String
+  date            DateTime @default(now())
+  coverImage      String
+  contentHtml     String   // You can use markdown as well, name it contentMarkdown
+  metaDescription String?  // Optional SEO description
+  tags            String[] // Array of tag strings
+  // relatedSpots    TouristSpot[] @relation("RelatedSpots")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
 
 model News {
   id             String   @id @default(auto()) @map("_id") @db.ObjectId
