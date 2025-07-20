@@ -10,8 +10,6 @@ class PaymentService extends OrderService{
     // Create payment intent for checkout session
     async createPaymentIntent(order, transactionId,) {
         try {
-            console.log(process.env.STRIPE_SECRETE_KEY)
-            console.log(order)
 
             const lineItems = order.orderItems.map(item => ({
                 price_data: {
@@ -41,12 +39,10 @@ class PaymentService extends OrderService{
 
     async paymentSuccess(req, res) {
         try {
-            console.log("req.query", req.query);
             
             // Retrieve the session from Stripe using the sessionId
             const session = await stripe.checkout.sessions.retrieve(req.query.sessionId);
             
-            console.log("session", session, session.payment_status);
             
             // Check if the payment was successful
             if (session.payment_status === "paid") {
@@ -65,13 +61,11 @@ class PaymentService extends OrderService{
                 //         paymentStatus: "paid",  // Mark payment status as "paid"
                 //     },
                 // });
-                console.log(session.client_reference_id);
                 const orderData = await prisma.order.findUnique({
                     where:{
                         transactionId: transactionId,
                     }
                 })
-                console.log(orderData,"orderData");
                 const updatedOrder = await prisma.order.update({
                     where: {
                         id: orderData.id,  
@@ -81,7 +75,6 @@ class PaymentService extends OrderService{
                     },
                 });
     
-                console.log(updatedOrder);
                 
                 // Redirect the user to the success page
                 return res.redirect(`${process.env.CLIENT_URL}/success`);

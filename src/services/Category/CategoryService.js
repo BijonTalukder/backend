@@ -29,7 +29,6 @@ class CategoryService {
 
     // Get a single category by ID
     async getCategoryById(id) {
-        console.log(id,"this id");
         
         try {
             const category = await this.prisma.category.findUnique({

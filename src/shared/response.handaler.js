@@ -1,6 +1,5 @@
 class ResponseHandler{
     static success(res,message,data,statusCode=200){
-        console.log(message);
         
         res.status(statusCode).json({
             success:true,
