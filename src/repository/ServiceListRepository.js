@@ -49,7 +49,7 @@ class ServiceListRepository {
         return await this.prisma.serviceList.findMany(
             {
                 where: {
-                    id: serviceId
+                    serviceId: serviceId
                 }
             }
         )
