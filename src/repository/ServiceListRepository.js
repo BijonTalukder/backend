@@ -34,14 +34,14 @@ class ServiceListRepository {
 
     async deleteServiceList(serviceListId) {
         const existing = await this.prisma.serviceList.findUnique({
-            where: { serviceId: serviceListId }
+            where: { id: serviceListId }
         });
         if (!existing) {
             throw new Error('ServiceList not found');
         }
         return await this.prisma.serviceList.delete({
             where: {
-                serviceId: serviceListId,
+                id: serviceListId,
             },
         });
     }
@@ -49,7 +49,7 @@ class ServiceListRepository {
         return await this.prisma.serviceList.findMany(
             {
                 where: {
-                    serviceId: serviceId
+                    id: serviceId
                 }
             }
         )

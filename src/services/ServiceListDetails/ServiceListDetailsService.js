@@ -31,7 +31,7 @@ class ServiceListDetailsService {
             console.log("Fetching ServiceListDetails by ID:", id);
             const ServiceListDetails = await this.prisma.serviceDetail.findUnique({
                 where: {
-                    id: id, 
+                    serviceListId: id, 
                 },
             });
             return ServiceListDetails; 
