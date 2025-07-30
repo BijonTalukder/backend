@@ -58,7 +58,7 @@ model ServiceList {
   isTouristSpot Boolean @default(false)
   isInternalUrl     Boolean
   imageUrl          String
-  contentHtml     String
+  contentHtml     String?
   dynamicFields     Json?
    views           Int?      @default(0) // Optional total views
   upVotes         Int?      @default(0) // Optional upvotes
