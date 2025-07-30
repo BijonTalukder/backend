@@ -1,6 +1,5 @@
 class ServiceListRepository {
     constructor(prismaClient) {
-        console.log("ServiceListRepository initialized with Prisma Client", prismaClient);
         
         this.prisma = prismaClient;
     }
@@ -20,7 +19,6 @@ class ServiceListRepository {
     }
 
     async getAllServiceLists() {
-        console.log(this.prisma);
         
         return await this.prisma.serviceList.findMany();
     }
@@ -36,14 +34,14 @@ class ServiceListRepository {
 
     async deleteServiceList(serviceListId) {
         const existing = await this.prisma.serviceList.findUnique({
-            where: { serviceId: serviceListId }
+            where: { id: serviceListId }
         });
         if (!existing) {
             throw new Error('ServiceList not found');
         }
         return await this.prisma.serviceList.delete({
             where: {
-                serviceId: serviceListId,
+                id: serviceListId,
             },
         });
     }

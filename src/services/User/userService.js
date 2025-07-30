@@ -8,7 +8,6 @@ class UserService extends BcryptHasher{
       async createUser(data) {
         try {
           const hashedPassword = await this.hash(data.password,10)
-          console.log(hashedPassword);
            
           return await this.prisma.user.create({
             data: {

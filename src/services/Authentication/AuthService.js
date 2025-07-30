@@ -7,7 +7,6 @@ class AuthService {
 
     async varifyUser(email, password) {
         try {
-            console.log(this.prisma);
             
             const user = await this.prisma.user.findUnique(
                 {
@@ -17,7 +16,6 @@ class AuthService {
                 }
             )
 
-            console.log(user);
             
             if (!user) {
                 return null;

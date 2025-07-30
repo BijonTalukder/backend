@@ -17,6 +17,7 @@ const fs= require("fs");
 const path= require("path");
 const newsRouter = require('./newsRouter');
 const breakingNewsRouter = require('./breakingNewsRouter');
+const serviceListDetailsRouter = require('./serviceListDetails');
 const router = express.Router();
 
 const prisma = new PrismaClient()
@@ -67,6 +68,7 @@ router.use('/services-list',serviceListRouter);
 
 router.use("/news",newsRouter);
 router.use("/breaking-news",breakingNewsRouter);
+router.use("/service-list-details",serviceListDetailsRouter)
 
 
 // const storage = multer.memoryStorage();
