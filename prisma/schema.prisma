@@ -30,123 +30,6 @@ model User {
   updatedAt DateTime @updatedAt
 }
 
-model Category {
-  id           String  @id @default(auto()) @map("_id") @db.ObjectId
-  categoryName String  @unique
-  status       Boolean
-  imageUrl     String
-
-  createdById String   @db.ObjectId
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  products    Product[]
-}
-
-model Attributes {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  name      String
-  value     Json    
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Brand {
-  id        String  @id @default(auto()) @map("_id") @db.ObjectId
-  brandName String  @unique
-  status    Boolean
-  imageUrl  String
-
-  createdById String   @db.ObjectId
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  products Product[]
-}
-
-model Product {
-  id              String    @id @default(auto()) @map("_id") @db.ObjectId
-  name            String
-  description     String
-  productSubtitle String
-  price           Float
-  imageUrl        Json
-  weight          String
-  material        String
-  thickness       String
-  elasticity      String
-  breathability   String
-  categoryId      String    @db.ObjectId
-  brandId         String    @db.ObjectId
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  topSale         Boolean   @default(false)
-  newArrival      Boolean   @default(false)
-  status          Boolean   @default(true)
-  availability    Boolean   @default(true)
-  variants        Variant[]
-  category        Category  @relation(fields: [categoryId], references: [id])
-  brand           Brand     @relation(fields: [brandId], references: [id])
-}
-
-
-
-model Variant {
-  id         String @id @default(auto()) @map("_id") @db.ObjectId
-  productId  String @db.ObjectId
-  attributes Json
-  stock      Int
-  price      Float?
-  priceTiers Json
-  imageUrl   Json
-
-  sku       String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  product   Product  @relation(fields: [productId], references: [id])
-}
-
-enum OrderStatus {
-  pending
-  processing
-  shipped
-  delivered
-  cancelled
-}
-
-model Order {
-  id              String        @id @default(auto()) @map("_id") @db.ObjectId
-  userId          String        @db.ObjectId
-  orderTotal      Float
-  paymentStatus   PaymentStatus
-  shippingAddress String
-  billingAddress  String
-  orderStatus     OrderStatus   @default(pending)
-  orderItems      Json
-  deliveryFee     Float         @default(0)
-  taxAmount       Float         @default(0)
-  transactionId  String          @unique
-}
-
-
-model Slider {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  title       String   @db.String           
-  description String?  @db.String          
-  imageUrl    String   @db.String           
-  linkUrl     String?  @db.String           
-  position    Int      @default(0)          
-  isActive    Boolean  @default(true)       
-  createdAt   DateTime @default(now())      
-  updatedAt   DateTime @updatedAt      
-}
-model Subscribe {
-  id            String   @id @default(auto()) @map("_id") @db.ObjectId
-  email         String   @unique @db.String
-  isSubscribed  Boolean  @default(true)
-  subscribedAt  DateTime @default(now())
-  unsubscribedAt DateTime? @db.Date
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-}
 
 model Service {
   id        String      @id @default(auto()) @map("_id") @db.ObjectId
@@ -172,34 +55,33 @@ model ServiceList {
   status            Boolean? @default(true)
   isClikableLink Boolean @default(false)
   url               String
+  isTouristSpot Boolean @default(false)
   isInternalUrl     Boolean
   imageUrl          String
-  dynamicFields     Json?
- serviceDetails    ServiceDetail[] @relation("ServiceListToDetails")
-  service           Service  @relation("ServiceToServiceList", fields: [serviceId], references: [id])  // Relating to Service model
-}
-model ServiceDetail {
-  id              String   @id @default(auto()) @map("_id") @db.ObjectId
-  title           String
-  slug            String   @unique
-  type            String
-  coverImage      String
   contentHtml     String
-  metaDescription String?
-  tags            String[]
-
-  // Optional Fields
-  readTimeMinutes Int?      // Optional estimated read time
-  views           Int?      @default(0) // Optional total views
+  dynamicFields     Json?
+   views           Int?      @default(0) // Optional total views
   upVotes         Int?      @default(0) // Optional upvotes
   downVotes       Int?      @default(0) // Optional downvotes
+  createdAt         DateTime @default(now())
+  service           Service  @relation("ServiceToServiceList", fields: [serviceId], references: [id])  // Relating to Service model
+  blogs       TouristSpotBlog[] @relation("blogs")
+}
 
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-
-  serviceListId   String    @db.ObjectId
- serviceList      ServiceList @relation("ServiceListToDetails", fields: [serviceListId], references: [id])
-
+model TouristSpotBlog {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  serviceListId String   @db.ObjectId
+  title         String
+  slug          String   @unique
+  contentHtml   String
+  thumbnail     String?
+  publishedAt   DateTime @default(now())
+  views         Int      @default(0)
+serviceList ServiceList @relation("blogs", fields: [serviceListId], references: [id]) // Relating to ServiceList model
+  // 👍 Voting / Engagement
+  upVotes       Int      @default(0)
+  downVotes     Int      @default(0)
+  likes         Int      @default(0)
 }
 
 
