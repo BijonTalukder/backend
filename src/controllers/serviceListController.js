@@ -13,7 +13,7 @@ class ServiceListController {
       const createdServiceList = await this.serviceListService.createServiceList(serviceListData);
       return res.status(201).json({ data: createdServiceList });
     } catch (error) {
-      next(error); // Pass error to error-handling middleware
+      next(error); 
     }
   }
 

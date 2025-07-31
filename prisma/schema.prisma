@@ -30,81 +30,79 @@ model User {
   updatedAt DateTime @updatedAt
 }
 
-
 model Service {
-  id        String      @id @default(auto()) @map("_id") @db.ObjectId
-  title     String
-  status    Boolean     @default(true)
-  type String @default("card")
-  imageUrl  String?
-  isLottie Boolean @default(false)
-  isClikableLink Boolean @default(false)
-  url               String?
-  bannerImage String[]
-  serviceList ServiceList[] @relation("ServiceToServiceList")  // This defines the relationship
+  id             String        @id @default(auto()) @map("_id") @db.ObjectId
+  title          String
+  status         Boolean       @default(true)
+  type           String        @default("card")
+  imageUrl       String?
+  isLottie       Boolean       @default(false)
+  isClikableLink Boolean       @default(false)
+  url            String?
+  bannerImage    String[]
+  serviceList    ServiceList[] @relation("ServiceToServiceList") // This defines the relationship
 }
 
 model ServiceList {
-  id                String   @id @default(auto()) @map("_id") @db.ObjectId
-  serviceId         String   @db.ObjectId
-  title             String
-  shortDescription  String?
-  description       String?
-  phoneNumber       String?
-  type              String
-  status            Boolean? @default(true)
-  isClikableLink Boolean @default(false)
-  url               String
-  isTouristSpot Boolean @default(false)
-  isInternalUrl     Boolean
-  imageUrl          String
-  contentHtml     String?
-  dynamicFields     Json?
-   views           Int?      @default(0) // Optional total views
-  upVotes         Int?      @default(0) // Optional upvotes
-  downVotes       Int?      @default(0) // Optional downvotes
-  createdAt         DateTime @default(now())
-  service           Service  @relation("ServiceToServiceList", fields: [serviceId], references: [id])  // Relating to Service model
-  blogs       TouristSpotBlog[] @relation("blogs")
+  id               String            @id @default(auto()) @map("_id") @db.ObjectId
+  serviceId        String            @db.ObjectId
+  title            String
+  shortDescription String?
+  description      String?
+  phoneNumber      String?
+  type             String
+  status           Boolean?          @default(true)
+  isClikableLink   Boolean           @default(false)
+  url              String
+  isTouristSpot    Boolean           @default(false)
+  isInternalUrl    Boolean
+  imageUrl         String
+  contentHtml      String?
+  dynamicFields    Json?
+  views            Int?              @default(0) // Optional total views
+  upVotes          Int?              @default(0) // Optional upvotes
+  downVotes        Int?              @default(0) // Optional downvotes
+  createdAt        DateTime          @default(now())
+  service          Service           @relation("ServiceToServiceList", fields: [serviceId], references: [id]) // Relating to Service model
+  blogs            TouristSpotBlog[] @relation("blogs")
 }
 
 model TouristSpotBlog {
-  id            String   @id @default(auto()) @map("_id") @db.ObjectId
-  serviceListId String   @db.ObjectId
+  id            String      @id @default(auto()) @map("_id") @db.ObjectId
+  serviceListId String      @db.ObjectId
   title         String
-  slug          String   @unique
+  slug          String      @unique
   contentHtml   String
   thumbnail     String?
-  publishedAt   DateTime @default(now())
-  views         Int      @default(0)
-serviceList ServiceList @relation("blogs", fields: [serviceListId], references: [id]) // Relating to ServiceList model
+  publishedAt   DateTime    @default(now())
+  views         Int         @default(0)
+  serviceList   ServiceList @relation("blogs", fields: [serviceListId], references: [id]) // Relating to ServiceList model
   // 👍 Voting / Engagement
-  upVotes       Int      @default(0)
-  downVotes     Int      @default(0)
-  likes         Int      @default(0)
+  upVotes       Int         @default(0)
+  downVotes     Int         @default(0)
+  likes         Int         @default(0)
 }
 
-
 model News {
-  id             String   @id @default(auto()) @map("_id") @db.ObjectId
-  title          String   
-  shortDescription String? 
-  description    String?  
-  slug           String   @unique 
-  tags           String[] 
-  isBreakingNews Boolean @default(false)
-  thumbnailUrl   String?   
-  type             String @default("rss")
-  newsUrl         String?
-  isExternalNews  Boolean@default(true)
-  imageUrl       String? 
-  videoUrl       String? 
-  videoEmbed     String? 
-  hasVideo       Boolean  @default(false) 
-  authorName     String?  
-  publishedAt    DateTime @default(now()) 
-  like           Int      @default(0)
-  comment        Int      @default(0) 
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  title            String
+  shortDescription String?
+  description      String?
+  slug             String   @unique
+  tags             String[]
+  isBreakingNews   Boolean  @default(false)
+  thumbnailUrl     String?
+  type             String   @default("rss")
+  newsUrl          String?
+  isExternalNews   Boolean  @default(true)
+  imageUrl         String?
+  videoUrl         String?
+  videoEmbed       String?
+  hasVideo         Boolean  @default(false)
+  authorName       String?
+  publishedAt      DateTime @default(now())
+  like             Int      @default(0)
+  comment          Int      @default(0)
 
   aiSummary         String?
   aiCategory        String?
@@ -113,14 +111,15 @@ model News {
   imageAltText      String?
   lastProcessed     DateTime?
 }
-model BreakingNews {
-    id        String   @id @default(auto()) @map("_id") @db.ObjectId
-    newsTitle String
-    content   String? 
-    status    Boolean @default(true)
-    order     Int     @unique
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
 
-    @@index([status]) 
+model BreakingNews {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  newsTitle String
+  content   String?
+  status    Boolean  @default(true)
+  order     Int      @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
 }
