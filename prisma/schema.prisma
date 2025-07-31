@@ -62,7 +62,7 @@ model ServiceList {
   views            Int?              @default(0) // Optional total views
   upVotes          Int?              @default(0) // Optional upvotes
   downVotes        Int?              @default(0) // Optional downvotes
-  createdAt        DateTime          @default(now())
+  createdAt        DateTime?         @default(now())
   service          Service           @relation("ServiceToServiceList", fields: [serviceId], references: [id]) // Relating to Service model
   blogs            TouristSpotBlog[] @relation("blogs")
 }
