@@ -28,8 +28,8 @@ class ServiceListDetailsService {
    
     async getServiceListDetailsById(id) {
         try {
-            console.log("Fetching ServiceListDetails by ID:", id);
-            const ServiceListDetails = await this.prisma.serviceDetail.findUnique({
+            // console.log("Fetching ServiceListDetails by ID:", id);
+            const ServiceListDetails = await this.prisma.serviceDetail.findMany({
                 where: {
                     serviceListId: id, 
                 },
