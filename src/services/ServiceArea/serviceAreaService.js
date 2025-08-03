@@ -1,32 +1,40 @@
-const ServiceAreaRepository = require("../../repository/ServiceAreaRepository");
-
 class ServiceAreaService {
-  constructor(prismaClient) {
-    this.serviceAreaRepository = new ServiceAreaRepository(prismaClient);
+  constructor(prisma) {
+    this.prisma = prisma;
   }
 
+  // Create a new service area
   async createServiceArea(data) {
-    return await this.serviceAreaRepository.createServiceArea(data);
+    return await this.prisma.serviceArea.create({
+      data,
+    });
   }
 
-  async getServiceAreaById(id) {
-    const area = await this.serviceAreaRepository.getServiceAreaById(id);
-    if (!area) {
-      throw new Error("Service Area not found");
-    }
-    return area;
-  }
-
+  // Get all service areas
   async getAllServiceAreas() {
-    return await this.serviceAreaRepository.getAllServiceAreas();
+    return await this.prisma.serviceArea.findMany();
   }
 
+  // Get service area by ID
+  async getServiceAreaById(id) {
+    return await this.prisma.serviceArea.findUnique({
+      where: { id },
+    });
+  }
+
+  // Update service area
   async updateServiceArea(id, data) {
-    return await this.serviceAreaRepository.updateServiceArea(id, data);
+    return await this.prisma.serviceArea.update({
+      where: { id },
+      data,
+    });
   }
 
+  // Delete service area
   async deleteServiceArea(id) {
-    return await this.serviceAreaRepository.deleteServiceArea(id);
+    return await this.prisma.serviceArea.delete({
+      where: { id },
+    });
   }
 }
 

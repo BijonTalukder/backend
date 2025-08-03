@@ -5,6 +5,7 @@ class ServiceAreaController {
     this.serviceAreaService = new ServiceAreaService(prismaClient);
   }
 
+  // Create a new service area
   async createServiceArea(req, res, next) {
     try {
       const areaData = req.body;
@@ -19,19 +20,7 @@ class ServiceAreaController {
     }
   }
 
-  async getServiceAreaById(req, res, next) {
-    try {
-      const id = req.params.id;
-      const area = await this.serviceAreaService.getServiceAreaById(id);
-      res.status(200).json({
-        success: true,
-        data: area,
-      });
-    } catch (error) {
-      next(error);
-    }
-  }
-
+  // Get all service areas
   async getAllServiceAreas(req, res, next) {
     try {
       const areas = await this.serviceAreaService.getAllServiceAreas();
@@ -44,29 +33,45 @@ class ServiceAreaController {
     }
   }
 
-  async updateServiceArea(req, res, next) {
+  // Get a single service area by ID
+  async getServiceAreaById(req, res, next) {
     try {
-      const id = req.params.id;
-      const updateData = req.body;
-      const updated = await this.serviceAreaService.updateServiceArea(id, updateData);
+      const areaId = req.params.id;
+      const area = await this.serviceAreaService.getServiceAreaById(areaId);
       res.status(200).json({
         success: true,
-        message: "Service Area updated successfully",
-        data: updated,
+        data: area,
       });
     } catch (error) {
       next(error);
     }
   }
 
+  // Update a service area
+  async updateServiceArea(req, res, next) {
+    try {
+      const areaId = req.params.id;
+      const updatedData = req.body;
+      const updatedArea = await this.serviceAreaService.updateServiceArea(areaId, updatedData);
+      res.status(200).json({
+        success: true,
+        message: "Service Area updated successfully",
+        data: updatedArea,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // Delete a service area
   async deleteServiceArea(req, res, next) {
     try {
-      const id = req.params.id;
-      const deleted = await this.serviceAreaService.deleteServiceArea(id);
+      const areaId = req.params.id;
+      const deletedArea = await this.serviceAreaService.deleteServiceArea(areaId);
       res.status(200).json({
         success: true,
         message: "Service Area deleted successfully",
-        data: deleted,
+        data: deletedArea,
       });
     } catch (error) {
       next(error);
