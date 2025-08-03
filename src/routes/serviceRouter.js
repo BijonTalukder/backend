@@ -11,5 +11,5 @@ serviceRouter.get('/', serviceController.getAllServices.bind(serviceController))
 serviceRouter.get('/:id', serviceController.getServiceById.bind(serviceController));
 serviceRouter.put('/:id', serviceController.updateService.bind(serviceController));
 serviceRouter.delete('/:id', serviceController.deleteService.bind(serviceController));
-
+serviceRouter.get('/service-area/:serviceAreaId',serviceController.getServiceByServiceAreaId.bind(serviceController) )
 module.exports = serviceRouter;

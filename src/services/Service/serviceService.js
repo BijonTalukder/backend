@@ -2,6 +2,7 @@ const ServiceRepository = require("../../repository/ServiceRepository");
 
 class ServiceService {
     constructor(prismaClient) {
+      this.prismaClient = prismaClient;
       this.serviceRepository = new ServiceRepository(prismaClient);
     }
   
@@ -35,6 +36,18 @@ class ServiceService {
       const deletedService = await this.serviceRepository.deleteService(serviceId);
       return deletedService;
     }
+
+    async getServiceByServiceAreaId(serviceAreaId) {
+
+      const data = await this.prismaClient.service.findMany({
+        where: { serviceAreaId },
+       
+        
+      })
+      return data;
+   
+    }
+
   }
   
   module.exports = ServiceService;

@@ -74,6 +74,19 @@ class ServiceController {
     }
   }
 
+  async getServiceByServiceAreaId(req, res, next) {
+    try {
+      const serviceAreaId = req.params.serviceAreaId;
+      const services = await this.serviceService.getServiceByServiceAreaId(serviceAreaId);
+      res.status(200).json({
+        success: true,
+        data: services,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   
 }
 
