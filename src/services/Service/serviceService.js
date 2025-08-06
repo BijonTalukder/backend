@@ -41,7 +41,9 @@ class ServiceService {
 
       const data = await this.prismaClient.service.findMany({
         where: { serviceAreaId },
-       
+         include:{
+          serviceList:true
+        }
         
       })
       return data;
