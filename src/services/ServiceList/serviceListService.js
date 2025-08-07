@@ -2,6 +2,7 @@ const ServiceListRepository = require("../../repository/ServiceListRepository");
 
 class ServiceListService {
   constructor(prismaClient) {
+    this.prismaClient = prismaClient;
     this.serviceRepository = new ServiceListRepository(prismaClient);
   }
 
@@ -40,6 +41,15 @@ class ServiceListService {
   async getAllServicesListByService(serviceListId) {
     const deletedServiceList = await this.serviceRepository.getAllServicesListByService(serviceListId);
     return deletedServiceList;
+  }
+
+  async getAllTouristSpotService(){
+    const data = await this.prismaClient.serviceList.findMany({
+      where:{
+        isTouristSpot: true
+      }
+    });
+    return data;
   }
 }
 

@@ -73,6 +73,19 @@ class ServiceListController {
 next(error)      
     }
   }
+
+  async getAllTouristSpot(req, res, next) {
+    try {
+      const touristSpots = await this.serviceListService.getAllTouristSpotService();
+      res.status(200).json({
+        success: true,
+        message: 'Tourist spots fetched successfully',
+        data: touristSpots,
+      });
+    } catch (error) {
+      next(error); 
+    }
+  }
 }
 
 module.exports = ServiceListController;
