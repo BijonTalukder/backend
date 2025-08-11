@@ -28,6 +28,8 @@ model User {
   name      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  status    Boolean  @default(true)
+  userPermissions UserAreaPermission[] @relation("UserPermissions")
 }
 model UserAreaPermission {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
@@ -36,6 +38,7 @@ model UserAreaPermission {
   permissions Json  
   status    Boolean  @default(true)
   createdAt DateTime @default(now())
+  user     User     @relation("UserPermissions", fields: [userId], references: [id])
   
 
 }

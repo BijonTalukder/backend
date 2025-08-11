@@ -12,9 +12,9 @@ const serviceRouter = require('./serviceRouter');
 const serviceListRouter = require('./serviceListRouter');
 const { PrismaClient } = require('@prisma/client');
 const multer = require('multer');
-const sharp =require("sharp");
-const fs= require("fs");
-const path= require("path");
+const sharp = require("sharp");
+const fs = require("fs");
+const path = require("path");
 const newsRouter = require('./newsRouter');
 const breakingNewsRouter = require('./breakingNewsRouter');
 const serviceListDetailsRouter = require('./serviceListDetails');
@@ -56,7 +56,9 @@ router.delete('/users/:id', (req, res, next) => {
 // Define routes
 router.post('/admin/create', (req, res, next) => adminController.createAdmin(req, res, next));
 
-
+router.post('/admin/create-user-with-permissions', (req, res, next) => {
+    adminController.createUserWithPermissions(req, res, next);
+});
 
 //authentication
 router.post('/login', (req, res, next) => {
@@ -64,13 +66,13 @@ router.post('/login', (req, res, next) => {
     authController.login(req, res, next)
 })
 
-router.use('/services',serviceRouter);
-router.use('/services-list',serviceListRouter);
+router.use('/services', serviceRouter);
+router.use('/services-list', serviceListRouter);
 
-router.use("/news",newsRouter);
-router.use("/breaking-news",breakingNewsRouter);
-router.use("/service-list-details",serviceListDetailsRouter)
-router.use('/service-areas',serviceAreaRouter);
+router.use("/news", newsRouter);
+router.use("/breaking-news", breakingNewsRouter);
+router.use("/service-list-details", serviceListDetailsRouter)
+router.use('/service-areas', serviceAreaRouter);
 
 // const storage = multer.memoryStorage();
 // const upload = multer({ storage });
@@ -84,7 +86,7 @@ router.use('/service-areas',serviceAreaRouter);
 // const processImage = async (buffer, originalname, folderPath, folderUrl) => {
 //     const timestamp = Date.now();
 //     const baseName = path.parse(originalname).name;
-  
+
 //     // Define file names for different sizes
 
 //     const extraLargeFileName = `extra-large_${timestamp}-${baseName}.webp`;
@@ -97,13 +99,13 @@ router.use('/service-areas',serviceAreaRouter);
 //   const largeFilePath = path.join(folderPath, "large", largeFileName);
 //   const mediumFilePath = path.join(folderPath, "medium", mediumFileName);
 //   const smallFilePath = path.join(folderPath, "small", smallFileName);
-  
+
 //     // Create the directories for each size
 //     fs.mkdirSync(path.join(folderPath, "extra-large"), { recursive: true });
 //   fs.mkdirSync(path.join(folderPath, "large"), { recursive: true });
 //   fs.mkdirSync(path.join(folderPath, "medium"), { recursive: true });
 //   fs.mkdirSync(path.join(folderPath, "small"), { recursive: true });
-  
+
 //     // Process images with different sizes
 //     await Promise.all([
 //         sharp(buffer).resize(680).toFormat("webp", { quality: 100, lossless: false }).toFile(extraLargeFilePath),
@@ -111,7 +113,7 @@ router.use('/service-areas',serviceAreaRouter);
 //         sharp(buffer).resize(350).toFormat("webp", { quality: 100, lossless: false }).toFile(mediumFilePath),
 //         sharp(buffer).resize(250).toFormat("webp", { quality: 100, lossless: false }).toFile(smallFilePath),
 //     ]);
-  
+
 //     return {
 //         extraLarge: { filename: extraLargeFileName, imageUrl: `${folderUrl}/extra-large/${extraLargeFileName}` },
 //         large: { filename: largeFileName, imageUrl: `${folderUrl}/large/${largeFileName}` },
@@ -119,25 +121,25 @@ router.use('/service-areas',serviceAreaRouter);
 //         small: { filename: smallFileName, imageUrl: `${folderUrl}/small/${smallFileName}` },
 //       };
 //   };
-  
+
 //   router.post("/upload", upload.any(), async (req, res) => {
 //     try {
 //       let folder = req.body.folder || "default"; // Default folder if none provided
 //       const title = req.body.title;
-  
+
 //       console.log("Title:", title);
-  
+
 //       // Create folder inside 'uploads' directory
 //       const folderPath = path.join(baseUploadDir, folder);
 //       if (!fs.existsSync(folderPath)) {
 //         fs.mkdirSync(folderPath, { recursive: true });
 //       }
-  
+
 //       // Folder URL (Ensuring it's a proper URL format)
 //       const folderUrl = `${req.protocol}://${req.get("host")}/uploads/${folder}`;
-  
+
 //       let filesUploaded = [];
-  
+
 //       // Handle multiple files
 //       if (req.files && req.files.length > 0) {
 //         const processedFiles = await Promise.all(
@@ -148,7 +150,7 @@ router.use('/service-areas',serviceAreaRouter);
 //         );
 //         filesUploaded.push(...processedFiles);
 //       }
-  
+
 //       res.json({ 
 //         status: "Success",
 //         folderUrl: folderUrl,
@@ -159,7 +161,7 @@ router.use('/service-areas',serviceAreaRouter);
 //       res.status(500).json({ message: "Error processing images" });
 //     }
 //   });
-  
+
 
 
 

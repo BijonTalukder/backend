@@ -12,7 +12,7 @@ class ServiceAreaService {
 
   // Get all service areas
   async getAllServiceAreas() {
-    return await this.prisma.serviceArea.findMany();
+    return await this.prisma.serviceArea.findMany({});
   }
 
   // Get service area by ID

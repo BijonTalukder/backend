@@ -16,6 +16,19 @@ class AdminController {
         next(error);
       }
     }
+
+    async createUserWithPermissions(req, res, next) {
+      try {
+        const result = await this.adminService.createUserWithPermissions(req.body);
+        res.status(201).json({
+          success: true,
+          message: 'User with permissions created successfully',
+          data: result,
+        });
+      } catch (error) {
+        next(error);
+      }
+    }
   }
   
   module.exports = AdminController;
