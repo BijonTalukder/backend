@@ -12,6 +12,9 @@ class AuthService {
                 {
                     where: {
                         email
+                    },
+                    include: {
+                        userAreaPermission: true
                     }
                 }
             )

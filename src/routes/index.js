@@ -19,6 +19,7 @@ const newsRouter = require('./newsRouter');
 const breakingNewsRouter = require('./breakingNewsRouter');
 const serviceListDetailsRouter = require('./serviceListDetails');
 const serviceAreaRouter = require('./serviceAreaRoutes');
+const auth = require('../utility/auth');
 const router = express.Router();
 
 const prisma = new PrismaClient()
@@ -56,7 +57,7 @@ router.delete('/users/:id', (req, res, next) => {
 // Define routes
 router.post('/admin/create', (req, res, next) => adminController.createAdmin(req, res, next));
 
-router.post('/admin/create-user-with-permissions', (req, res, next) => {
+router.post('/admin/create-user-with-permissions', auth,(req, res, next) => {
     adminController.createUserWithPermissions(req, res, next);
 });
 

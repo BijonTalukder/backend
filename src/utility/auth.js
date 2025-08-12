@@ -6,7 +6,7 @@ const auth =(req,res,next)=>{
         return res.status(401).json({ message: 'No token provided' });
     }
    const tokenHandler = new TokenHandler();
-   const decode=  tokenHandler.verifyToken(token);
+   const decode=  tokenHandler.verifyToken(token,"key123");
    console.log(decode);
     if (!decode) {
         return res.status(401).json({ message: 'Invalid token' });
@@ -18,3 +18,4 @@ const auth =(req,res,next)=>{
    
 
 }
+module.exports = auth;

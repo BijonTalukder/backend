@@ -19,6 +19,7 @@ class AdminController {
 
     async createUserWithPermissions(req, res, next) {
       try {
+        console.log(req.user,"----------")
         const result = await this.adminService.createUserWithPermissions(req.body);
         res.status(201).json({
           success: true,
