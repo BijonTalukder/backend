@@ -75,20 +75,20 @@ router.use("/news", newsRouter);
 router.use("/breaking-news", breakingNewsRouter);
 router.use("/service-list-details", serviceListDetailsRouter)
 router.use('/service-areas', serviceAreaRouter);
-const controller = new GoogleController();
+// const controller = new GoogleController();
 
-async function fetchSheetData() {
-  try {
-    const spreadsheetId = '1i5bDFyJ-NEwUKABdCFYnbe9RrEoVEkX9'; // From the sheet URL
-    const range = 'Sheet1!A1:Z';
+// async function fetchSheetData() {
+//   try {
+//     const spreadsheetId = '1i5bDFyJ-NEwUKABdCFYnbe9RrEoVEkX9'; // From the sheet URL
+//     const range = 'Sheet1!A1:Z';
     
-    const sheetData = await controller.loadData(spreadsheetId, range);
-    // console.log(sheetData);
-  } catch (error) {
-    console.error('Failed to fetch sheet data:', error);
-  }
-}
-fetchSheetData()
+//     const sheetData = await controller.loadData(spreadsheetId, range);
+//     // console.log(sheetData);
+//   } catch (error) {
+//     console.error('Failed to fetch sheet data:', error);
+//   }
+// }
+// fetchSheetData()
 
 // const storage = multer.memoryStorage();
 // const upload = multer({ storage });

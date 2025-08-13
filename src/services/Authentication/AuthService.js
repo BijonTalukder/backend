@@ -14,12 +14,12 @@ class AuthService {
                         email
                     },
                     include: {
-                        userAreaPermission: true
+                   userPermissions: true
                     }
                 }
             )
 
-            
+            console.log("------------asdfdsdf")
             if (!user) {
                 return null;
             }
@@ -30,6 +30,7 @@ class AuthService {
             return user;
 
         } catch (error) {
+console.log(error);
 
         }
     }
