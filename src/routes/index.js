@@ -12,7 +12,7 @@ const serviceRouter = require('./serviceRouter');
 const serviceListRouter = require('./serviceListRouter');
 const { PrismaClient } = require('@prisma/client');
 const multer = require('multer');
-const sharp = require("sharp");
+// const sharp = require("sharp");
 const fs = require("fs");
 const path = require("path");
 const newsRouter = require('./newsRouter');
@@ -20,7 +20,7 @@ const breakingNewsRouter = require('./breakingNewsRouter');
 const serviceListDetailsRouter = require('./serviceListDetails');
 const serviceAreaRouter = require('./serviceAreaRoutes');
 const auth = require('../utility/auth');
-const GoogleController = require('../controllers/googleController');
+// const GoogleController = require('../controllers/googleController');
 const router = express.Router();
 
 const prisma = new PrismaClient()
