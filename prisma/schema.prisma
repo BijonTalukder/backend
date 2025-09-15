@@ -55,6 +55,27 @@ model ServiceArea{
 
   services Service[] @relation("Services")
 }
+type Image {
+  url       String
+  thumbnail String?
+  preview   String?
+}
+
+type AiPlatform {
+  id   Int
+  name String
+  url  String?
+}
+
+model Prompt {
+  id          String       @id @map("_id") @default(auto()) @db.ObjectId
+  title       String
+  text        String
+  images      Image[]
+  aiPlatforms AiPlatform[] @map("ai_platforms")
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
 model Service {
   id             String        @id @default(auto()) @map("_id") @db.ObjectId
   title          String
