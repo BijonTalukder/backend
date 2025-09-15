@@ -20,6 +20,7 @@ const breakingNewsRouter = require('./breakingNewsRouter');
 const serviceListDetailsRouter = require('./serviceListDetails');
 const serviceAreaRouter = require('./serviceAreaRoutes');
 const auth = require('../utility/auth');
+const PromtRouter = require('./promtRouter');
 // const GoogleController = require('../controllers/googleController');
 const router = express.Router();
 
@@ -75,6 +76,7 @@ router.use("/news", newsRouter);
 router.use("/breaking-news", breakingNewsRouter);
 router.use("/service-list-details", serviceListDetailsRouter)
 router.use('/service-areas', serviceAreaRouter);
+router.use('/prompts',PromtRouter)
 // const controller = new GoogleController();
 
 // async function fetchSheetData() {
