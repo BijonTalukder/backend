@@ -16,7 +16,7 @@ class AuthController {
             }
 
             const user = await this.authService.varifyUser(email, password)
-            
+            console.log("---asdf",user)
             
             if (!user) {
                 return res.status(401).json({ success: false, message: "Invalid credentials" });

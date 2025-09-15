@@ -12,7 +12,7 @@ const serviceRouter = require('./serviceRouter');
 const serviceListRouter = require('./serviceListRouter');
 const { PrismaClient } = require('@prisma/client');
 const multer = require('multer');
-const sharp = require("sharp");
+// const sharp = require("sharp");
 const fs = require("fs");
 const path = require("path");
 const newsRouter = require('./newsRouter');
@@ -20,7 +20,7 @@ const breakingNewsRouter = require('./breakingNewsRouter');
 const serviceListDetailsRouter = require('./serviceListDetails');
 const serviceAreaRouter = require('./serviceAreaRoutes');
 const auth = require('../utility/auth');
-const GoogleController = require('../controllers/googleController');
+// const GoogleController = require('../controllers/googleController');
 const router = express.Router();
 
 const prisma = new PrismaClient()
@@ -75,20 +75,20 @@ router.use("/news", newsRouter);
 router.use("/breaking-news", breakingNewsRouter);
 router.use("/service-list-details", serviceListDetailsRouter)
 router.use('/service-areas', serviceAreaRouter);
-const controller = new GoogleController();
+// const controller = new GoogleController();
 
-async function fetchSheetData() {
-  try {
-    const spreadsheetId = '1i5bDFyJ-NEwUKABdCFYnbe9RrEoVEkX9'; // From the sheet URL
-    const range = 'Sheet1!A1:Z';
+// async function fetchSheetData() {
+//   try {
+//     const spreadsheetId = '1i5bDFyJ-NEwUKABdCFYnbe9RrEoVEkX9'; // From the sheet URL
+//     const range = 'Sheet1!A1:Z';
     
-    const sheetData = await controller.loadData(spreadsheetId, range);
-    // console.log(sheetData);
-  } catch (error) {
-    console.error('Failed to fetch sheet data:', error);
-  }
-}
-fetchSheetData()
+//     const sheetData = await controller.loadData(spreadsheetId, range);
+//     // console.log(sheetData);
+//   } catch (error) {
+//     console.error('Failed to fetch sheet data:', error);
+//   }
+// }
+// fetchSheetData()
 
 // const storage = multer.memoryStorage();
 // const upload = multer({ storage });
