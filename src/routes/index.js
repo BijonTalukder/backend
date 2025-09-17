@@ -22,6 +22,7 @@ const serviceAreaRouter = require('./serviceAreaRoutes');
 const auth = require('../utility/auth');
 const PromtRouter = require('./promtRouter');
 const PromtInteractionRouter = require('./promtInteractionRouter');
+const categoryRouter = require('./categoryRouter');
 // const GoogleController = require('../controllers/googleController');
 const router = express.Router();
 
@@ -79,6 +80,7 @@ router.use("/service-list-details", serviceListDetailsRouter)
 router.use('/service-areas', serviceAreaRouter);
 router.use('/prompts',PromtRouter)
 router.use('/prompt-interaction',PromtInteractionRouter)
+router.use('/categories',categoryRouter)
 // const controller = new GoogleController();
 
 // async function fetchSheetData() {

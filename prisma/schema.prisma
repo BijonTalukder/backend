@@ -20,32 +20,29 @@ enum Role {
 }
 
 model User {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  email     String   @unique
-  password  String
-  phone     String?  @unique
-  role      Role @default(user)
-  name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  status    Boolean  @default(true)
+  id              String               @id @default(auto()) @map("_id") @db.ObjectId
+  email           String               @unique
+  password        String
+  phone           String?              @unique
+  role            Role                 @default(user)
+  name            String
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+  status          Boolean              @default(true)
   userPermissions UserAreaPermission[] @relation("UserPermissions")
 }
-model UserAreaPermission {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String   @db.ObjectId
-  areaId    String   @db.ObjectId
-  permissions Json  
-  status    Boolean  @default(true)
-  createdAt DateTime @default(now())
-  user     User     @relation("UserPermissions", fields: [userId], references: [id])
-  
 
+model UserAreaPermission {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String   @db.ObjectId
+  areaId      String   @db.ObjectId
+  permissions Json
+  status      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  user        User     @relation("UserPermissions", fields: [userId], references: [id])
 }
 
-
-
-model ServiceArea{
+model ServiceArea {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
   name        String
   description String?
@@ -55,6 +52,7 @@ model ServiceArea{
 
   services Service[] @relation("Services")
 }
+
 type Image {
   url       String
   thumbnail String?
@@ -68,19 +66,32 @@ type AiPlatform {
 }
 
 model Prompt {
-  id          String       @id @map("_id") @default(auto()) @db.ObjectId
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
   title       String
   text        String
   images      Image[]
   aiPlatforms AiPlatform[] @map("ai_platforms")
+  categoryId  String?      @db.ObjectId
+  tags        String[]     @default([])
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
 }
+
 model PromptInteraction {
-  id        String   @id @map("_id") @default(auto()) @db.ObjectId
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
   promptId  String   @db.ObjectId
-  type      String   // "view" | "like" | "share"
+  type      String // "view" | "like" | "share"
   createdAt DateTime @default(now())
+}
+
+model Category {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String   @unique
+  slug        String?  @unique
+  description String?
+  image       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Service {
