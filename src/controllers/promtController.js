@@ -18,18 +18,22 @@ class PromptController {
   }
 
   // Get All Prompts
-  async getAllPrompts(req, res, next) {
-    try {
-      const result = await this.promptService.getAllPrompts();
-      res.status(200).json({
-        success: true,
-        message: "Prompts fetched successfully",
-        data: result,
-      });
-    } catch (error) {
-      next(error);
-    }
+async getAllPrompts(req, res, next) {
+  try {
+    const page = parseInt(req.query.page ) || 1;
+    const size = parseInt(req.query.size) || 100;
+
+    const result = await this.promptService.getAllPrompts(page, size);
+
+    res.status(200).json({
+      success: true,
+      message: "Prompts fetched successfully",
+      ...result, // data + meta
+    });
+  } catch (error) {
+    next(error);
   }
+}
 
   // Get Prompt By ID
   async getPromptById(req, res, next) {

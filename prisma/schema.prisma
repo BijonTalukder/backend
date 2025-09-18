@@ -75,13 +75,16 @@ model Prompt {
   tags        String[]     @default([])
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
+  interactions PromptInteraction[]  @relation("PromptToInteraction")
 }
 
 model PromptInteraction {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   promptId  String   @db.ObjectId
+  ip        String?
   type      String // "view" | "like" | "share"
   createdAt DateTime @default(now())
+  prompt Prompt @relation("PromptToInteraction", fields: [promptId], references: [id])
 }
 
 model Category {
