@@ -21,16 +21,52 @@ class PromptService {
   }
 
   // Read All
-  async getAllPrompts() {
-    try {
-      return await this.prisma.prompt.findMany({
+async getAllPrompts(page, limit) {
+  try {
+    const skip = (page - 1) * limit;
+
+    const [prompts, total] = await Promise.all([
+      this.prisma.prompt.findMany({
+        skip,
+        take: limit,
         orderBy: { createdAt: "desc" },
-      });
-    } catch (error) {
-      console.log(error);
-      throw new Error("Database error: Unable to fetch prompts");
-    }
+      }),
+      this.prisma.prompt.count(),
+    ]);
+
+    const promptsWithCounts = await Promise.all(
+      prompts.map(async (p) => {
+        const [likes, views] = await Promise.all([
+          this.prisma.promptInteraction.count({
+            where: { promptId: p.id, type: "like" },
+          }),
+          this.prisma.promptInteraction.count({
+            where: { promptId: p.id, type: "view" },
+          }),
+        ]);
+
+        return {
+          ...p,
+          likes,
+          views,
+        };
+      })
+    );
+
+    return {
+      data: promptsWithCounts,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
+  } catch (error) {
+    console.error(error);
+    throw new Error("Database error: Unable to fetch prompts");
   }
+}
 
   // Read One
   async getPromptById(id) {
