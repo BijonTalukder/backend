@@ -34,24 +34,32 @@ async getAllPrompts(page, limit) {
       this.prisma.prompt.count(),
     ]);
 
-    const promptsWithCounts = await Promise.all(
-      prompts.map(async (p) => {
-        const [likes, views] = await Promise.all([
-          this.prisma.promptInteraction.count({
-            where: { promptId: p.id, type: "like" },
-          }),
-          this.prisma.promptInteraction.count({
-            where: { promptId: p.id, type: "view" },
-          }),
-        ]);
+    // সব promptId বের করো
+    const promptIds = prompts.map((p) => p.id);
 
-        return {
-          ...p,
-          likes,
-          views,
-        };
-      })
-    );
+    // একসাথে interaction group করে আনো
+    const interactions = await this.prisma.promptInteraction.groupBy({
+      by: ["promptId", "type"],
+      where: { promptId: { in: promptIds } },
+      _count: { _all: true },
+    });
+
+    // result কে map আকারে রাখো
+    const interactionMap = {};
+    interactions.forEach((i) => {
+      if (!interactionMap[i.promptId]) {
+        interactionMap[i.promptId] = { likes: 0, views: 0 };
+      }
+      if (i.type === "like") interactionMap[i.promptId].likes = i._count._all;
+      if (i.type === "view") interactionMap[i.promptId].views = i._count._all;
+    });
+
+    // prompt এর সাথে merge করো
+    const promptsWithCounts = prompts.map((p) => ({
+      ...p,
+      likes: interactionMap[p.id]?.likes || 0,
+      views: interactionMap[p.id]?.views || 0,
+    }));
 
     return {
       data: promptsWithCounts,
