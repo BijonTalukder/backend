@@ -10,6 +10,7 @@ class PromptInteractionService {
         data: {
           promptId: data.promptId,
           type: data.type,
+          ip:data.ip
         },
       });
     } catch (error) {

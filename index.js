@@ -15,7 +15,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
+app.set('trust proxy', true);
 // Routes
 app.use("/api/v1", router);
 
