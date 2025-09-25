@@ -35,10 +35,8 @@ async getAllPrompts(page, limit) {
       this.prisma.prompt.count(),
     ]);
 
-    // সব promptId বের করো
     const promptIds = prompts.map((p) => p.id);
 
-    // একসাথে interaction group করে আনো
     const interactions = await this.prisma.promptInteraction.groupBy({
       by: ["promptId", "type"],
       where: { promptId: { in: promptIds } },
