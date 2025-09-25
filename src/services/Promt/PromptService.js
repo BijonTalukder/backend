@@ -12,6 +12,7 @@ class PromptService {
           text: data.text,
           images: data.images || [],
           aiPlatforms: data.aiPlatforms || [],
+          categoryId: data.categoryId,
         },
       });
     } catch (error) {
@@ -44,7 +45,6 @@ async getAllPrompts(page, limit) {
       _count: { _all: true },
     });
 
-    // result কে map আকারে রাখো
     const interactionMap = {};
     interactions.forEach((i) => {
       if (!interactionMap[i.promptId]) {
@@ -54,7 +54,6 @@ async getAllPrompts(page, limit) {
       if (i.type === "view") interactionMap[i.promptId].views = i._count._all;
     });
 
-    // prompt এর সাথে merge করো
     const promptsWithCounts = prompts.map((p) => ({
       ...p,
       likes: interactionMap[p.id]?.likes || 0,
