@@ -95,6 +95,7 @@ async getAllPrompts(page, limit) {
           text: data.text,
           images: data.images,
           aiPlatforms: data.aiPlatforms,
+          categoryId: data.categoryId
         },
       });
     } catch (error) {
