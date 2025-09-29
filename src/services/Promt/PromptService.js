@@ -13,6 +13,7 @@ class PromptService {
           images: data.images || [],
           aiPlatforms: data.aiPlatforms || [],
           categoryId: data.categoryId,
+          userId: data.userId,
         },
       });
     } catch (error) {
