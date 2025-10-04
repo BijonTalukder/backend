@@ -39,7 +39,7 @@ const apiLimiter = rateLimit({
 });
 app.use('/api', apiLimiter); 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-app.set('trust proxy', true);
+app.set('trust proxy', 1);
 // Routes
 app.use("/api/v1", router);
 
