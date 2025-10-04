@@ -14,8 +14,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+<<<<<<< HEAD
     "@google/generative-ai": "^0.24.1",
     "@prisma/client": "^6.13.0",
+=======
+    "@prisma/client": "^6.16.3",
+>>>>>>> 80afc74dc9097de10138d40f3eacdbeee741e9a0
     "axios": "^1.11.0",
     "bcryptjs": "^2.4.3",
     "cheerio": "^1.0.0",
@@ -30,7 +34,7 @@
     "nodemon": "^3.1.9",
     "openai": "^4.85.3",
     "path": "^0.12.7",
-    "prisma": "^6.3.0",
+    "prisma": "^6.16.3",
     "puppeteer-core": "^24.16.2",
     "rss-parser": "^3.13.0",
     "stripe": "^17.5.0",

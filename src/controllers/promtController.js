@@ -22,12 +22,48 @@ async getAllPrompts(req, res, next) {
   try {
     const page = parseInt(req.query.page ) || 1;
     const size = parseInt(req.query.size) || 100;
-
     const result = await this.promptService.getAllPrompts(page, size);
 
     res.status(200).json({
       success: true,
       message: "Prompts fetched successfully",
+      ...result, // data + meta
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+// Get All Prompts without Category
+async getAllPromptsByNull(req, res, next) {
+  try {
+    const page = parseInt(req.query.page ) || 1;
+    const size = parseInt(req.query.size) || 100;
+    const result = await this.promptService.getAllPromptsByNullService(page, size);
+
+    res.status(200).json({
+      success: true,
+      message: "Prompts fetched successfully",
+      ...result, // data + meta
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+
+  // Get All Prompts by Category
+async getAllPromptsByCategory(req, res, next) {
+  try {
+    const page = parseInt(req.query.page ) || 1;
+    const size = parseInt(req.query.size) || 100;
+    const categoryId = req.params.id;
+    console.log(categoryId);
+    const result = await this.promptService.getAllPromptsByCategoryService(page, size, categoryId);
+
+    res.status(200).json({
+      success: true,
+      message: "Prompts fetched successfully by Category",
       ...result, // data + meta
     });
   } catch (error) {
