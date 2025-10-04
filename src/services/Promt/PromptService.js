@@ -13,7 +13,6 @@ class PromptService {
           images: data.images || [],
           aiPlatforms: data.aiPlatforms || [],
           categoryId: data.categoryId,
-          userId: data.userId,
         },
       });
     } catch (error) {
@@ -22,8 +21,8 @@ class PromptService {
     }
   }
 
-  // Read All
-async getAllPrompts(page, limit) {
+  // Read by Category
+async getAllPromptsByCategoryService(page, limit, categoryid) {
   try {
     const skip = (page - 1) * limit;
 
@@ -32,8 +31,11 @@ async getAllPrompts(page, limit) {
         skip,
         take: limit,
         orderBy: { createdAt: "desc" },
+        where: { categoryId: categoryid },
       }),
-      this.prisma.prompt.count(),
+       this.prisma.prompt.count({
+        where: { categoryId: categoryid }, // Count only the category-specific prompts
+      }),
     ]);
 
     const promptIds = prompts.map((p) => p.id);
@@ -73,6 +75,119 @@ async getAllPrompts(page, limit) {
     throw new Error("Database error: Unable to fetch prompts");
   }
 }
+
+ // Not Categorized Prompts
+async getAllPromptsByNullService(page, limit) {
+  try {
+    const skip = (page - 1) * limit;
+
+    const [prompts, total] = await Promise.all([
+      this.prisma.prompt.findMany({
+        skip,
+        take: limit,
+        orderBy: { createdAt: "desc" },
+        where: { categoryId: null },
+      }),
+       this.prisma.prompt.count({
+        where: { categoryId: null }, // Count only the category-specific prompts
+      }),
+    ]);
+
+    const promptIds = prompts.map((p) => p.id);
+
+    const interactions = await this.prisma.promptInteraction.groupBy({
+      by: ["promptId", "type"],
+      where: { promptId: { in: promptIds } },
+      _count: { _all: true },
+    });
+
+    const interactionMap = {};
+    interactions.forEach((i) => {
+      if (!interactionMap[i.promptId]) {
+        interactionMap[i.promptId] = { likes: 0, views: 0 };
+      }
+      if (i.type === "like") interactionMap[i.promptId].likes = i._count._all;
+      if (i.type === "view") interactionMap[i.promptId].views = i._count._all;
+    });
+
+    const promptsWithCounts = prompts.map((p) => ({
+      ...p,
+      likes: interactionMap[p.id]?.likes || 0,
+      views: interactionMap[p.id]?.views || 0,
+    }));
+
+    return {
+      data: promptsWithCounts,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
+  } catch (error) {
+    console.error(error);
+    throw new Error("Database error: Unable to fetch prompts");
+  }
+}
+
+
+ // Read with categoryId
+async getAllPrompts(page, limit) {
+  try {
+    const skip = (page - 1) * limit;
+
+    const [prompts,total] = await Promise.all([
+      this.prisma.prompt.findMany({
+        skip,
+        take: limit,
+        orderBy: { createdAt: "desc" },
+        
+      }),
+      this.prisma.prompt.count(),
+    ]);
+
+    const promptIds = prompts.map((p) => p.id);
+
+    const interactions = await this.prisma.promptInteraction.groupBy({
+      by: ["promptId", "type"],
+      where: { promptId: { in: promptIds } },
+      _count: { _all: true },
+    });
+
+    const interactionMap = {};
+    interactions.forEach((i) => {
+      if (!interactionMap[i.promptId]) {
+        interactionMap[i.promptId] = { likes: 0, views: 0 };
+      }
+      if (i.type === "like") interactionMap[i.promptId].likes = i._count._all;
+      if (i.type === "view") interactionMap[i.promptId].views = i._count._all;
+    });
+
+    let promptsWithCounts = prompts.map((p) => ({
+      ...p,
+      likes: interactionMap[p.id]?.likes || 0,
+      views: interactionMap[p.id]?.views || 0,
+    }));
+
+    // promptsWithCounts = promptsWithCounts.sort((a,b) => b.views - a.views);
+    const totalCount = promptsWithCounts.length;
+    return {
+      data: promptsWithCounts,
+      meta: {
+        total,
+        totalCount,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
+  } catch (error) {
+    console.error(error);
+    throw new Error("Database error: Unable to fetch prompts");
+  }
+}
+
 
   // Read One
   async getPromptById(id) {
