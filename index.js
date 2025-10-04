@@ -4,16 +4,40 @@ const { PrismaClient } = require('@prisma/client');
 const router = require('./src/routes');
 const swaggerSpec = require('./src/config/swaggerConfig');
 const app = express();
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+
 require('dotenv').config();
 const swaggerUi = require('swagger-ui-express');
 const port = process.env.PORT || 5000;
 const prisma = new PrismaClient();
 const RSSParser = require('rss-parser');
-
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:5173',
+  'https://gemini-apps.vercel.app/'
+];
 // Middleware
-app.use(cors());
-app.use(express.json());
+app.use(helmet());
 
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+}));
+// app.use(cors());
+app.use(express.json());
+const apiLimiter = rateLimit({
+  windowMs: 60 * 1000, // প্রতি মিনিটে
+  max: 30, // 30 টা request প্রতি IP
+  message: { success: false, message: 'Too many requests. Try again later.' },
+});
+app.use('/api', apiLimiter); 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.set('trust proxy', true);
 // Routes
