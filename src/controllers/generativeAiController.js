@@ -1,38 +1,40 @@
 const { GoogleGenerativeAI } = require("@google/generative-ai");
-const multer = require("multer");
 
-// Gemini client
 const genAI = new GoogleGenerativeAI(process.env.GEMINIAPI_KEY);
 
 class GenerativeAiController {
-  async generateImage(req, res, next) {
+  async generateImage(req, res) {
     try {
       const { promptId, prompt } = req.body;
+      const finalPrompt = prompt || "A beautiful landscape, digital art, vibrant colors";
       const fileBuffer = req.file?.buffer;
 
-      let imagePart = null;
+      console.log("Received prompt:", finalPrompt);
+      console.log("Received file:", req.file ? req.file.originalname : "No file");
+
+      const model = genAI.getGenerativeModel({ model: "models/generative-image-1" });
+
+      const input = {
+        imagePrompt: {
+          text: finalPrompt,
+        },
+        size: "1024x1024",
+      };
+
       if (fileBuffer) {
-        imagePart = {
-          inlineData: {
-            data: fileBuffer.toString("base64"),
-            mimeType: req.file.mimetype,
-          },
+        input.imagePrompt.image = {
+          data: fileBuffer.toString("base64"),
+          mimeType: req.file.mimetype,
         };
       }
 
-      // Use Imagen (Google’s image model) instead of Gemini-text
-      const model = genAI.getGenerativeModel({ model: "imagen-3.0" });
+      const result = await model.generateContent({ input });
 
-      const result = await model.generateContent(
-        [
-          { text: `Create an image based on this prompt: ${prompt}` },
-          imagePart,
-        ].filter(Boolean)
-      );
+      const base64Image = result.response.candidates[0].content[0].image?.data;
 
-      // Output as base64 image
-      const base64Image =
-        result.response.candidates[0].content.parts[0].inlineData.data;
+      if (!base64Image) {
+        throw new Error("No image returned from the model");
+      }
 
       res.json({
         success: true,
@@ -41,9 +43,7 @@ class GenerativeAiController {
       });
     } catch (error) {
       console.error("Image generation failed:", error);
-      res
-        .status(500)
-        .json({ success: false, message: "Image generation failed" });
+      res.status(500).json({ success: false, message: error.message });
     }
   }
 }

@@ -14,20 +14,18 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-<<<<<<< HEAD
     "@google/generative-ai": "^0.24.1",
-    "@prisma/client": "^6.13.0",
-=======
     "@prisma/client": "^6.16.3",
->>>>>>> 80afc74dc9097de10138d40f3eacdbeee741e9a0
     "axios": "^1.11.0",
     "bcryptjs": "^2.4.3",
     "cheerio": "^1.0.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.2",
+    "express-rate-limit": "^8.1.0",
     "fs": "^0.0.1-security",
     "googleapis": "^155.0.1",
+    "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.5.0",
     "multer": "^1.4.5-lts.1",

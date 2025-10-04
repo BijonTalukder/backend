@@ -44,7 +44,7 @@ class PromptInteractionService {
       if (toDate) where.createdAt = { ...where.createdAt, lte: toDate };
 
       return await this.prisma.promptInteraction.groupBy({
-        by: ["type", "createdAt","ip"],
+        by: ["type", "createdAt"],
         _count: { _all: true },
         where,
         orderBy: { createdAt: "asc" },
