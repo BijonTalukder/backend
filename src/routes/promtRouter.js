@@ -13,6 +13,9 @@ const promptController = new PromptController(promptService);
 // Routes
 PromtRouter.post("/create", (req, res, next) => promptController.createPrompt(req, res, next));
 PromtRouter.get("/", (req, res, next) => promptController.getAllPrompts(req, res, next));
+PromtRouter.get("/category/:id", (req, res, next) => promptController.getAllPromptsByCategory(req, res, next));
+PromtRouter.get("/null/category", (req, res, next) => promptController.getAllPromptsByNull(req, res, next));
+//getAllPromptsByCategory
 PromtRouter.get("/:id", (req, res, next) => promptController.getPromptById(req, res, next));
 PromtRouter.put("/:id", (req, res, next) => promptController.updatePrompt(req, res, next));
 PromtRouter.delete("/:id", (req, res, next) => promptController.deletePrompt(req, res, next));
