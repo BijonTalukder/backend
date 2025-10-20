@@ -7,14 +7,14 @@ class AuthService {
 
     async varifyUser(email, password) {
         try {
-            
+
             const user = await this.prisma.user.findUnique(
                 {
                     where: {
                         email
                     },
                     include: {
-                   userPermissions: true
+                        userPermissions: true
                     }
                 }
             )
@@ -30,9 +30,33 @@ class AuthService {
             return user;
 
         } catch (error) {
-console.log(error);
+            console.log(error);
 
         }
+    }
+    async googleLogin({ email, firebaseUid, name, avatar, authProvider }) {
+        let user = await this.prisma.user.findUnique({
+            where: {
+                email
+            },
+        })
+        console.log(user)
+        if (!user) {
+            user = await this.prisma.user.create({
+                data: {
+                    email: email,
+                    role: "user",
+                    name: name,
+                    avatar,
+                    firebaseUid,
+                    authProvider
+
+                }
+
+            })
+
+        }
+        return user
     }
 }
 module.exports = AuthService

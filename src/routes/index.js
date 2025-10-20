@@ -24,6 +24,7 @@ const PromtRouter = require('./promtRouter');
 const PromtInteractionRouter = require('./promtInteractionRouter');
 const categoryRouter = require('./categoryRouter');
 const generativeAiRouter = require('./generativeAiRouter');
+const authRouter = require('./authRouter');
 // const GoogleController = require('../controllers/googleController');
 const router = express.Router();
 
@@ -82,6 +83,7 @@ router.use('/service-areas', serviceAreaRouter);
 router.use('/prompts',PromtRouter)
 router.use('/prompt-interaction',PromtInteractionRouter)
 router.use('/categories',categoryRouter)
+router.use('/auth',authRouter)
 // router.use('/generative-ai',generativeAiRouter)
 // const controller = new GoogleController();
 
