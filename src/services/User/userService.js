@@ -14,7 +14,7 @@ class UserService extends BcryptHasher{
               email: data.email,
               password: hashedPassword,
               phone: data.phone,
-              role: data.role,
+              role: data.role||"user",
               name: data.name,
             }
           });

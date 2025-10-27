@@ -7,13 +7,14 @@ class PromptService {
   async createPrompt(data) {
     try {
       return await this.prisma.prompt.create({
-        data: {
-          title: data.title,
-          text: data.text,
-          images: data.images || [],
-          aiPlatforms: data.aiPlatforms || [],
-          categoryId: data.categoryId,
-        },
+      data: {
+        ...data,
+        title: data.title,
+        text: data.text,
+        images: data.images || [],
+        aiPlatforms: data.aiPlatforms || [],
+        categoryId: data.categoryId,
+      },
       });
     } catch (error) {
       console.log(error);
