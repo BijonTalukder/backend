@@ -207,6 +207,7 @@ async getAllPrompts(page, limit) {
     try {
       return await this.prisma.prompt.findMany({
         where: { createdBy: id },
+          orderBy: { createdAt: "desc" },
       });
     } catch (error) {
       console.log(error);
