@@ -20,7 +20,7 @@ PromtRouter.get("/null/category", (req, res, next) => promptController.getAllPro
 PromtRouter.get("/:id", (req, res, next) => promptController.getPromptById(req, res, next));
 PromtRouter.put("/:id", (req, res, next) => promptController.updatePrompt(req, res, next));
 PromtRouter.delete("/:id", (req, res, next) => promptController.deletePrompt(req, res, next));
-PromtRouter.get("user/:id", (req, res, next) => promptController.getPromptByUser(req, res, next));
+PromtRouter.get("/user/:id", (req, res, next) => promptController.getPromptByUser(req, res, next));
 
 
 module.exports = PromtRouter;

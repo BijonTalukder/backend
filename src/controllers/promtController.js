@@ -120,9 +120,9 @@ async getAllPromptsByCategory(req, res, next) {
 
   async getPromptByUser(req,res,next){
   try {
-     const res= await this.promptService.getPromptByUser(req.params.id);
+     const result= await this.promptService.getPromptByUser(req.params.id);
       res.status(200).json({
-        data:res,
+        data:result,
         success: true,
         message: "Prompt get successfully",
       });
