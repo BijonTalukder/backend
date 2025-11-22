@@ -202,6 +202,17 @@ async getAllPrompts(page, limit) {
     }
   }
 
+  async getPromptByUser(id)
+  {
+    try {
+      return await this.prisma.prompt.findMany({
+        where: { createdBy: id },
+      });
+    } catch (error) {
+      console.log(error);
+      throw new Error("Database error: Unable to fetch prompt");
+    }
+  }
   // Update
   async updatePrompt(id, data) {
     try {
@@ -232,6 +243,7 @@ async getAllPrompts(page, limit) {
       throw new Error("Database error: Unable to delete prompt");
     }
   }
+
 }
 
 module.exports = PromptService;

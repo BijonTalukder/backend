@@ -117,6 +117,22 @@ async getAllPromptsByCategory(req, res, next) {
       next(error);
     }
   }
+
+  async getPromptByUser(req,res,next){
+  try {
+     const res= await this.promptService.getPromptByUser(req.params.id);
+      res.status(200).json({
+        data:res,
+        success: true,
+        message: "Prompt get successfully",
+      });
+    
+  } catch (error) {
+    next(error)
+  }
 }
+}
+
+
 
 module.exports = PromptController;
