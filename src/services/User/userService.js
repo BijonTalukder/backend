@@ -26,16 +26,20 @@ class UserService extends BcryptHasher{
           throw new Error('Database error: Unable to create admin');
         }
       }
+async getAllUsers() {
+  try {
+    const users = await this.prisma.user.findMany({
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
 
-      async getAllUsers() {
-        try {
-          return await this.prisma.user.findMany();
-        } catch (error) {
-          console.error("Error fetching users:", error);
-          throw new Error("Database error: Unable to fetch users");
-        }
-      }
-    
+    return users;  // ✅ you must return this
+  } catch (error) {
+    console.error("Prisma Error:", error);
+    throw new Error("Database error: Unable to fetch users");
+  }
+}
       // Get a single user by ID
       async getSingleUser(userId) {
         try {
