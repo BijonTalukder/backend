@@ -29,12 +29,23 @@ class UserService extends BcryptHasher{
 async getAllUsers() {
   try {
     const users = await this.prisma.user.findMany({
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        name:true,
+        // mobile: true,
+        // username: true,
+        createdAt: true,
+        updatedAt: true,
+        // password is excluded automatically
+      },
       orderBy: {
         createdAt: "desc",
       },
     });
 
-    return users;  // ✅ you must return this
+    return users;
   } catch (error) {
     console.error("Prisma Error:", error);
     throw new Error("Database error: Unable to fetch users");

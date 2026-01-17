@@ -69,9 +69,45 @@ router.post('/admin/create-user-with-permissions', auth,(req, res, next) => {
 
 //authentication
 router.post('/login', (req, res, next) => {
+
     const authController = new AuthController(authService)
     authController.login(req, res, next)
 })
+
+//file uploader
+// app.post("/upload-chunk", upload.single("chunk"), async (req, res) => {
+//     const chunkStore = new Map();
+//   const { fileId, chunkIndex, totalChunks } = req.body;
+
+//   if (!chunkStore.has(fileId)) {
+//     chunkStore.set(fileId, []);
+//   }
+
+//   const chunks = chunkStore.get(fileId);
+//   chunks[chunkIndex] = req.file.buffer;
+
+//   if (chunks.filter(Boolean).length == totalChunks) {
+//     const fullBuffer = Buffer.concat(chunks);
+
+//     const stream = cloudinary.uploader.upload_stream(
+//       { folder: "uploads" },
+//       async (err, result) => {
+//         if (err) return res.status(500).json(err);
+
+//         // save to DB
+//         await ImageModel.create({ url: result.secure_url });
+
+//         chunkStore.delete(fileId);
+
+//         return res.json({ success: true, url: result.secure_url });
+//       }
+//     );
+
+//     stream.end(fullBuffer);
+//   } else {
+//     res.json({ received: true });
+//   }
+// });
 
 router.use('/services', serviceRouter);
 router.use('/services-list', serviceListRouter);
