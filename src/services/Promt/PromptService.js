@@ -18,7 +18,7 @@ class PromptService {
       });
     } catch (error) {
       console.log(error);
-      throw new Error("Database error: Unable to create prompt");
+      throw new Error("Database error: Unable to create prompt",error);
     }
   }
 

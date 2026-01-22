@@ -92,10 +92,14 @@ async getAllUsers() {
       // Delete a user by ID
       async deleteUser(userId) {
         try {
-          await this.prisma.user.delete({
+
+          await this.prisma.userAreaPermission.deleteMany({
+      where: { userId },
+    });
+         const res = await this.prisma.user.delete({
             where: { id: userId },
           });
-    
+        console.log(res)
           return { message: `User with ID ${userId} deleted successfully` };
         } catch (error) {
           console.error("Error deleting user:", error);
