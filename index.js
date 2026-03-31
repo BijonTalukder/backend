@@ -24,7 +24,16 @@ const RSSParser = require('rss-parser');
 // Middleware
 app.use(helmet());
 
-app.use(cors());
+app.use(cors({
+  origin: [
+    'http://localhost:3000',
+    'http://localhost:5173',
+    'https://gemini-apps.vercel.app'
+  ],
+  credentials: true,
+}));
+
+app.options('*', cors());
 // {
 //   origin: function (origin, callback) {
 //     if (!origin || allowedOrigins.includes(origin)) {
