@@ -12,11 +12,15 @@ const swaggerUi = require('swagger-ui-express');
 const port = process.env.PORT || 5000;
 const prisma = new PrismaClient();
 const RSSParser = require('rss-parser');
-const allowedOrigins = [
-  'http://localhost:3000',
-  'http://localhost:5173',
-  'https://gemini-apps.vercel.app/'
-];
+app.use(cors({
+  origin: [
+    'http://localhost:3000',
+    'http://localhost:5173',
+    'https://gemini-apps.vercel.app'
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  credentials: true,
+}));
 // Middleware
 app.use(helmet());
 
