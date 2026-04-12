@@ -15,7 +15,7 @@ const RSSParser = require('rss-parser');
 const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:5173',
-  'https://gemini-apps.vercel.app/'
+  'https://gemini-apps.vercel.app'
 ];
 // Middleware
 app.use(helmet());
@@ -38,7 +38,7 @@ const apiLimiter = rateLimit({
   max: 30, // 30 টা request প্রতি IP
   message: { success: false, message: 'Too many requests. Try again later.' },
 });
-app.use('/api', apiLimiter); 
+app.use('/api', apiLimiter);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.set('trust proxy', 1);
 // Routes
@@ -46,7 +46,7 @@ app.use("/api/v1", router);
 
 app.use((err, req, res, next) => {
   console.error('Unhandled Error:', err);
-  
+
   if (res && !res.headersSent) {
     res.status(err.status || 500).json({
       success: false,
