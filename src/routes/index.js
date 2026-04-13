@@ -49,12 +49,18 @@ router.get('/users/:id', (req, res, next) => {
 });
 
 // Route to update a user by ID
-router.put('/users/:id', (req, res, next) => {
+router.put('/users/:id', auth, (req, res, next) => {
+    if (req.user.id !== req.params.id && req.user.role !== 'admin') {
+        return res.status(403).json({ success: false, message: 'Forbidden' });
+    }
     userController.updateUser(req, res, next);
 });
 
 // Route to delete a user by ID
-router.delete('/users/:id', (req, res, next) => {
+router.delete('/users/:id', auth, (req, res, next) => {
+    if (req.user.id !== req.params.id && req.user.role !== 'admin') {
+        return res.status(403).json({ success: false, message: 'Forbidden' });
+    }
     userController.deleteUser(req, res, next);
 });
 
@@ -63,7 +69,7 @@ router.delete('/users/:id', (req, res, next) => {
 // Define routes
 router.post('/admin/create', (req, res, next) => adminController.createAdmin(req, res, next));
 
-router.post('/admin/create-user-with-permissions', auth,(req, res, next) => {
+router.post('/admin/create-user-with-permissions', auth, (req, res, next) => {
     adminController.createUserWithPermissions(req, res, next);
 });
 
@@ -116,10 +122,10 @@ router.use("/news", newsRouter);
 router.use("/breaking-news", breakingNewsRouter);
 router.use("/service-list-details", serviceListDetailsRouter)
 router.use('/service-areas', serviceAreaRouter);
-router.use('/prompts',PromtRouter)
-router.use('/prompt-interaction',PromtInteractionRouter)
-router.use('/categories',categoryRouter)
-router.use('/auth',authRouter)
+router.use('/prompts', PromtRouter)
+router.use('/prompt-interaction', PromtInteractionRouter)
+router.use('/categories', categoryRouter)
+router.use('/auth', authRouter)
 // router.use('/generative-ai',generativeAiRouter)
 // const controller = new GoogleController();
 
@@ -127,7 +133,7 @@ router.use('/auth',authRouter)
 //   try {
 //     const spreadsheetId = '1i5bDFyJ-NEwUKABdCFYnbe9RrEoVEkX9'; // From the sheet URL
 //     const range = 'Sheet1!A1:Z';
-    
+
 //     const sheetData = await controller.loadData(spreadsheetId, range);
 //     // console.log(sheetData);
 //   } catch (error) {
