@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const { PrismaClient } = require('@prisma/client');
 const router = require('./src/routes');
+const v2Router = require('./src/routes/v2');
 const swaggerSpec = require('./src/config/swaggerConfig');
 const app = express();
 const helmet = require('helmet');
@@ -43,6 +44,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.set('trust proxy', 1);
 // Routes
 app.use("/api/v1", router);
+app.use("/api/v2", v2Router);
 
 app.use((err, req, res, next) => {
   console.error('Unhandled Error:', err);

@@ -6,6 +6,7 @@
   "scripts": {
     "start": "nodemon index.js",
     "seed": "node prisma/seed.js",
+    "sync-counts": "node prisma/syncPromptCounts.js",
     "vercel-build": "prisma generate",
     "prisma:generate": "prisma generate",
     "test": "echo \"Error: no test specified\" && exit 1"
