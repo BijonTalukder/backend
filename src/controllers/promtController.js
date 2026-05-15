@@ -1,12 +1,45 @@
 class PromptController {
-  constructor(promptService) {
+  constructor(promptService, prisma) {
     this.promptService = promptService;
+    this.prisma = prisma;
   }
 
   // Create Prompt
   async createPrompt(req, res, next) {
     try {
       const result = await this.promptService.createPrompt(req.body);
+
+      // Update creator stats
+      const createdBy = req.body.createdBy;
+      if (createdBy) {
+        const prev = await this.prisma.creatorStat.upsert({
+          where: { userId: createdBy },
+          create: {
+            userId: createdBy,
+            promptCount: 1,
+            totalLikes: 0,
+            totalViews: 0,
+            totalCopies: 0,
+            score: 100,
+          },
+          update: { promptCount: { increment: 1 } },
+        });
+
+        if (!prev) {
+          // just created, score already set to 100
+        } else {
+          const newScore =
+            (prev.totalLikes || 0) * 10 +
+            (prev.totalViews || 0) * 1 +
+            ((prev.promptCount || 0) + 1) * 100 +
+            (prev.totalCopies || 0) * 2;
+          await this.prisma.creatorStat.update({
+            where: { userId: createdBy },
+            data: { score: newScore },
+          });
+        }
+      }
+
       res.status(201).json({
         success: true,
         message: "Prompt created successfully",

@@ -42,6 +42,10 @@ router.get('/top-creators', ctrl.getTopCreators);
 // GET /api/v2/profile/:id
 router.get('/profile/:id', ctrl.getProfile);
 
+// ── Sync ───────────────────────────────────────────────────
+// POST /api/v2/sync/creator-stats (one-time, populates CreatorStat from existing data)
+router.post('/sync/creator-stats', ctrl.syncCreatorStats);
+
 // ── User Category Preferences ──────────────────────────────
 // GET /api/v2/users/:userId/category-preferences
 router.get('/users/:userId/category-preferences', ctrl.getUserCategoryPreferences);

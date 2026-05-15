@@ -6,55 +6,55 @@ class V2UserService {
   async getTopCreators(page, limit) {
     const skip = (page - 1) * limit;
 
+    const stats = await this.prisma.creatorStat.findMany({
+      orderBy: { score: 'desc' },
+      skip,
+      take: limit,
+    });
+
+    if (stats.length === 0) {
+      return { data: [], meta: { total: 0, page, limit, totalPages: 0 } };
+    }
+
+    const userIds = stats.map((s) => s.userId);
     const users = await this.prisma.user.findMany({
-      where: { role: { not: 'admin' } },
+      where: { id: { in: userIds } },
       select: {
         id: true, name: true, email: true, avatar: true,
         profession: true, bio: true, location: true, createdAt: true,
       },
-      skip,
-      take: limit,
-      orderBy: { createdAt: 'desc' },
     });
 
-    const enriched = await Promise.all(
-      users.map(async (u) => {
-        const prompts = await this.prisma.prompt.findMany({
-          where: { createdBy: u.id },
-          select: { id: true, likeCount: true, viewCount: true },
-        });
+    const userMap = {};
+    users.forEach((u) => { userMap[u.id] = u; });
 
-        const promptCount = prompts.length;
-        const totalLikes = prompts.reduce((sum, p) => sum + (p.likeCount || 0), 0);
-        const totalViews = prompts.reduce((sum, p) => sum + (p.viewCount || 0), 0);
-        const totalCopies = totalViews;
+    const ranked = stats.map((s, i) => {
+      const u = userMap[s.userId] || { name: 'Unknown' };
+      return {
+        id: s.userId,
+        name: u.name,
+        email: u.email,
+        avatar: u.avatar,
+        profession: u.profession,
+        bio: u.bio,
+        location: u.location,
+        joinedAt: u.createdAt,
+        stats: {
+          promptCount: s.promptCount,
+          totalLikes: s.totalLikes,
+          totalViews: s.totalViews,
+          totalCopies: s.totalCopies,
+        },
+        score: s.score,
+        rank: skip + i + 1,
+      };
+    });
 
-        return {
-          id: u.id,
-          name: u.name,
-          email: u.email,
-          avatar: u.avatar,
-          profession: u.profession,
-          bio: u.bio,
-          location: u.location,
-          joinedAt: u.createdAt,
-          stats: {
-            promptCount,
-            totalLikes,
-            totalViews,
-            totalCopies,
-          },
-          score: totalLikes * 2 + totalViews + promptCount * 50,
-        };
-      }),
-    );
-
-    enriched.sort((a, b) => b.score - a.score);
-    const ranked = enriched.map((u, i) => ({ ...u, rank: i + 1 }));
+    const total = await this.prisma.creatorStat.count();
 
     return {
       data: ranked,
-      meta: { total: ranked.length, page, limit, totalPages: Math.ceil(ranked.length / limit) },
+      meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
     };
   }
 
@@ -70,23 +70,20 @@ class V2UserService {
 
     if (!user) return null;
 
-    const prompts = await this.prisma.prompt.findMany({
-      where: { createdBy: userId },
-      select: { id: true, likeCount: true, viewCount: true },
+    const stat = await this.prisma.creatorStat.findUnique({
+      where: { userId },
     });
-
-    const promptCount = prompts.length;
-    const totalLikes = prompts.reduce((sum, p) => sum + (p.likeCount || 0), 0);
-    const totalViews = prompts.reduce((sum, p) => sum + (p.viewCount || 0), 0);
 
     return {
       ...user,
-      stats: {
-        promptCount,
-        totalLikes,
-        totalViews,
-        totalCopies: totalViews,
-      },
+      stats: stat
+        ? {
+            promptCount: stat.promptCount,
+            totalLikes: stat.totalLikes,
+            totalViews: stat.totalViews,
+            totalCopies: stat.totalCopies,
+          }
+        : { promptCount: 0, totalLikes: 0, totalViews: 0, totalCopies: 0 },
     };
   }
 
@@ -109,6 +106,36 @@ class V2UserService {
       .map(([categoryId, count]) => ({ categoryId, count }));
 
     return sorted;
+  }
+
+  async syncCreatorStats() {
+    const users = await this.prisma.user.findMany({
+      where: { role: { not: 'admin' } },
+      select: { id: true },
+    });
+
+    let synced = 0;
+    for (const u of users) {
+      const prompts = await this.prisma.prompt.findMany({
+        where: { createdBy: u.id },
+        select: { likeCount: true, viewCount: true },
+      });
+
+      const promptCount = prompts.length;
+      const totalLikes = prompts.reduce((sum, p) => sum + (p.likeCount || 0), 0);
+      const totalViews = prompts.reduce((sum, p) => sum + (p.viewCount || 0), 0);
+      const totalCopies = totalViews;
+      const score = totalLikes * 10 + totalViews * 1 + promptCount * 100 + totalCopies * 2;
+
+      await this.prisma.creatorStat.upsert({
+        where: { userId: u.id },
+        create: { userId: u.id, promptCount, totalLikes, totalViews, totalCopies, score },
+        update: { promptCount, totalLikes, totalViews, totalCopies, score },
+      });
+      synced++;
+    }
+
+    return { synced };
   }
 }
 

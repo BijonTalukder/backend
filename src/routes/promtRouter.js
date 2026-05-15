@@ -9,7 +9,7 @@ const prisma = new PrismaClient();
 
 
 const promptService = new PromptService(prisma);
-const promptController = new PromptController(promptService);
+const promptController = new PromptController(promptService, prisma);
 
 // Routes
 PromtRouter.post("/create", (req, res, next) => promptController.createPrompt(req, res, next));

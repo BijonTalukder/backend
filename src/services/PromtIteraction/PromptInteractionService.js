@@ -3,7 +3,7 @@ class PromptInteractionService {
     this.prisma = prismaClient;
   }
 
-  // Record interaction and update prompt counts
+  // Record interaction and update prompt counts + creator stats
   async recordInteraction(data) {
     try {
       const interaction = await this.prisma.promptInteraction.create({
@@ -29,6 +29,49 @@ class PromptInteractionService {
           where: { id: data.promptId },
           data: updateData,
         });
+
+        // Update creator stats
+        const prompt = await this.prisma.prompt.findUnique({
+          where: { id: data.promptId },
+          select: { createdBy: true },
+        });
+
+        if (prompt?.createdBy) {
+          const prev = await this.prisma.creatorStat.upsert({
+            where: { userId: prompt.createdBy },
+            create: {
+              userId: prompt.createdBy,
+              promptCount: 0,
+              totalLikes: 0,
+              totalViews: 0,
+              totalCopies: 0,
+              score: 0,
+            },
+            update: {},
+          });
+
+          const inc = {};
+          if (data.type === 'view') { inc.totalViews = 1; inc.totalCopies = 1; }
+          if (data.type === 'like') inc.totalLikes = 1;
+
+          if (Object.keys(inc).length) {
+            const next = {
+              totalLikes: (prev.totalLikes || 0) + (inc.totalLikes || 0),
+              totalViews: (prev.totalViews || 0) + (inc.totalViews || 0),
+              totalCopies: (prev.totalCopies || 0) + (inc.totalCopies || 0),
+            };
+            const newScore =
+              next.totalLikes * 10 +
+              next.totalViews * 1 +
+              (prev.promptCount || 0) * 100 +
+              next.totalCopies * 2;
+
+            await this.prisma.creatorStat.update({
+              where: { userId: prompt.createdBy },
+              data: { ...inc, score: newScore },
+            });
+          }
+        }
       }
 
       return interaction;
