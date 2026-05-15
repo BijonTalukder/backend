@@ -6,15 +6,19 @@ class V2UserService {
   async getTopCreators(page, limit) {
     const skip = (page - 1) * limit;
 
+    // Check if CreatorStat has data
+    const total = await this.prisma.creatorStat.count();
+
+    // Fallback: aggregate on-the-fly if CreatorStat not yet synced
+    if (total === 0) {
+      return this._getTopCreatorsLegacy(page, limit);
+    }
+
     const stats = await this.prisma.creatorStat.findMany({
       orderBy: { score: 'desc' },
       skip,
       take: limit,
     });
-
-    if (stats.length === 0) {
-      return { data: [], meta: { total: 0, page, limit, totalPages: 0 } };
-    }
 
     const userIds = stats.map((s) => s.userId);
     const users = await this.prisma.user.findMany({
@@ -50,11 +54,59 @@ class V2UserService {
       };
     });
 
-    const total = await this.prisma.creatorStat.count();
-
     return {
       data: ranked,
       meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+    };
+  }
+
+  // Fallback: aggregate from prompts directly (used before CreatorStat sync)
+  async _getTopCreatorsLegacy(page, limit) {
+    const skip = (page - 1) * limit;
+
+    const users = await this.prisma.user.findMany({
+      where: { role: { not: 'admin' } },
+      select: {
+        id: true, name: true, email: true, avatar: true,
+        profession: true, bio: true, location: true, createdAt: true,
+      },
+    });
+
+    const enriched = await Promise.all(
+      users.map(async (u) => {
+        const prompts = await this.prisma.prompt.findMany({
+          where: { createdBy: u.id },
+          select: { id: true, likeCount: true, viewCount: true },
+        });
+
+        const promptCount = prompts.length;
+        const totalLikes = prompts.reduce((sum, p) => sum + (p.likeCount || 0), 0);
+        const totalViews = prompts.reduce((sum, p) => sum + (p.viewCount || 0), 0);
+        const totalCopies = totalViews;
+
+        return {
+          id: u.id,
+          name: u.name,
+          email: u.email,
+          avatar: u.avatar,
+          profession: u.profession,
+          bio: u.bio,
+          location: u.location,
+          joinedAt: u.createdAt,
+          stats: { promptCount, totalLikes, totalViews, totalCopies },
+          score: totalLikes * 10 + totalViews * 1 + promptCount * 100 + totalCopies * 2,
+        };
+      }),
+    );
+
+    enriched.sort((a, b) => b.score - a.score);
+    const allRanked = enriched.map((u, i) => ({ ...u, rank: i + 1 }));
+
+    const ranked = allRanked.slice(skip, skip + limit);
+
+    return {
+      data: ranked,
+      meta: { total: allRanked.length, page, limit, totalPages: Math.ceil(allRanked.length / limit) },
     };
   }
 
