@@ -3,31 +3,6 @@ class V2PromptService {
     this.prisma = prismaClient;
   }
 
-  async getCreator(userId) {
-    if (!userId) return null;
-    try {
-      return await this.prisma.user.findUnique({
-        where: { id: userId },
-        select: {
-          id: true, name: true, email: true, avatar: true,
-          profession: true, bio: true, location: true, whatsapp: true,
-          createdAt: true,
-        },
-      });
-    } catch {
-      return null;
-    }
-  }
-
-  async getPromptCount(userId) {
-    if (!userId) return 0;
-    try {
-      return await this.prisma.prompt.count({ where: { createdBy: userId } });
-    } catch {
-      return 0;
-    }
-  }
-
   formatPrompt(p, creator, promptCount) {
     return {
       id: p.id,
@@ -60,6 +35,36 @@ class V2PromptService {
     };
   }
 
+  async attachCreators(prompts) {
+    const userIds = [...new Set(prompts.map(p => p.createdBy).filter(Boolean))];
+    const users = userIds.length ? await this.prisma.user.findMany({
+      where: { id: { in: userIds } },
+      select: {
+        id: true, name: true, email: true, avatar: true,
+        profession: true, bio: true, location: true, whatsapp: true,
+        createdAt: true,
+      },
+    }) : [];
+    const userMap = {};
+    users.forEach(u => { userMap[u.id] = u; });
+
+    const promptCounts = {};
+    if (userIds.length) {
+      const counts = await this.prisma.prompt.groupBy({
+        by: ['createdBy'],
+        where: { createdBy: { in: userIds } },
+        _count: { _all: true },
+      });
+      counts.forEach(c => { promptCounts[c.createdBy] = c._count._all; });
+    }
+
+    return prompts.map(p => {
+      const creator = userMap[p.createdBy] || null;
+      const promptCount = creator ? (promptCounts[p.createdBy] || 0) : 0;
+      return this.formatPrompt(p, creator, promptCount);
+    });
+  }
+
   async getAllPrompts(page, limit, sortBy) {
     const skip = (page - 1) * limit;
     let orderBy;
@@ -75,16 +80,8 @@ class V2PromptService {
       this.prisma.prompt.count(),
     ]);
 
-    const prompts = await Promise.all(
-      data.map(async (p) => {
-        const creator = await this.getCreator(p.createdBy);
-        const promptCount = creator ? await this.getPromptCount(p.createdBy) : 0;
-        return this.formatPrompt(p, creator, promptCount);
-      }),
-    );
-
     return {
-      data: prompts,
+      data: await this.attachCreators(data),
       meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
     };
   }
@@ -105,16 +102,8 @@ class V2PromptService {
       this.prisma.prompt.count({ where }),
     ]);
 
-    const prompts = await Promise.all(
-      data.map(async (p) => {
-        const creator = await this.getCreator(p.createdBy);
-        const promptCount = creator ? await this.getPromptCount(p.createdBy) : 0;
-        return this.formatPrompt(p, creator, promptCount);
-      }),
-    );
-
     return {
-      data: prompts,
+      data: await this.attachCreators(data),
       meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
     };
   }
@@ -122,9 +111,8 @@ class V2PromptService {
   async getPromptById(id) {
     const p = await this.prisma.prompt.findUnique({ where: { id } });
     if (!p) return null;
-    const creator = await this.getCreator(p.createdBy);
-    const promptCount = creator ? await this.getPromptCount(p.createdBy) : 0;
-    return this.formatPrompt(p, creator, promptCount);
+    const results = await this.attachCreators([p]);
+    return results[0];
   }
 
   async getPromptsByUser(userId) {
@@ -132,9 +120,7 @@ class V2PromptService {
       where: { createdBy: userId },
       orderBy: { createdAt: 'desc' },
     });
-    const creator = await this.getCreator(userId);
-    const promptCount = data.length;
-    return data.map((p) => this.formatPrompt(p, creator, promptCount));
+    return this.attachCreators(data);
   }
 
   async getRecommendedPrompts(ip, page, limit) {
@@ -182,16 +168,8 @@ class V2PromptService {
       this.prisma.prompt.count({ where: { categoryId: { in: sortedCats } } }),
     ]);
 
-    const prompts = await Promise.all(
-      data.map(async (p) => {
-        const creator = await this.getCreator(p.createdBy);
-        const promptCount = creator ? await this.getPromptCount(p.createdBy) : 0;
-        return this.formatPrompt(p, creator, promptCount);
-      }),
-    );
-
     return {
-      data: prompts,
+      data: await this.attachCreators(data),
       meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
     };
   }
