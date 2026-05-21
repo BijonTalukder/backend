@@ -231,3 +231,27 @@ model BreakingNews {
 
   @@index([status])
 }
+
+model AppConfig {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  privacyPolicy String?
+  termsOfService String?
+  contactEmail  String?
+  appVersion    String?
+  maintenanceMode Boolean @default(false)
+  updatedAt     DateTime @updatedAt
+  createdAt     DateTime @default(now())
+}
+
+model FeatureFlag {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  key         String   @unique
+  label       String
+  description String?
+  enabled     Boolean  @default(true)
+  platform    String   @default("all")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([enabled])
+}

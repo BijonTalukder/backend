@@ -26,6 +26,7 @@ const categoryRouter = require('./categoryRouter');
 const generativeAiRouter = require('./generativeAiRouter');
 const authRouter = require('./authRouter');
 const videoPromptRouter = require('./videoPromptRouter');
+const featureFlagRouter = require('./featureFlagRouter');
 // const GoogleController = require('../controllers/googleController');
 const router = express.Router();
 
@@ -128,6 +129,7 @@ router.use('/prompt-interaction', PromtInteractionRouter)
 router.use('/categories', categoryRouter)
 router.use('/auth', authRouter)
 router.use('/video-prompts', videoPromptRouter)
+router.use('/feature-flags', featureFlagRouter)
 // router.use('/generative-ai',generativeAiRouter)
 // const controller = new GoogleController();
 
