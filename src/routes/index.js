@@ -78,7 +78,7 @@ router.post('/admin/create-user-with-permissions', auth, (req, res, next) => {
 //authentication
 router.post('/login', (req, res, next) => {
 
-    const authController = new AuthController(authService)
+    const authController = new AuthController(authService, prisma)
     authController.login(req, res, next)
 })
 
