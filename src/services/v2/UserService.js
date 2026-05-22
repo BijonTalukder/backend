@@ -4,60 +4,7 @@ class V2UserService {
   }
 
   async getTopCreators(page, limit) {
-    const skip = (page - 1) * limit;
-
-    // Check if CreatorStat has data
-    const total = await this.prisma.creatorStat.count();
-
-    // Fallback: aggregate on-the-fly if CreatorStat not yet synced
-    if (total === 0) {
-      return this._getTopCreatorsLegacy(page, limit);
-    }
-
-    const stats = await this.prisma.creatorStat.findMany({
-      orderBy: { score: 'desc' },
-      skip,
-      take: limit,
-    });
-
-    const userIds = stats.map((s) => s.userId);
-    const users = await this.prisma.user.findMany({
-      where: { id: { in: userIds } },
-      select: {
-        id: true, name: true, email: true, avatar: true,
-        profession: true, bio: true, location: true, createdAt: true,
-      },
-    });
-
-    const userMap = {};
-    users.forEach((u) => { userMap[u.id] = u; });
-
-    const ranked = stats.map((s, i) => {
-      const u = userMap[s.userId] || { name: 'Unknown' };
-      return {
-        id: s.userId,
-        name: u.name,
-        email: u.email,
-        avatar: u.avatar,
-        profession: u.profession,
-        bio: u.bio,
-        location: u.location,
-        joinedAt: u.createdAt,
-        stats: {
-          promptCount: s.promptCount,
-          totalLikes: s.totalLikes,
-          totalViews: s.totalViews,
-          totalCopies: s.totalCopies,
-        },
-        score: s.score,
-        rank: skip + i + 1,
-      };
-    });
-
-    return {
-      data: ranked,
-      meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
-    };
+    return this._getTopCreatorsLegacy(page, limit);
   }
 
   // Fallback: aggregate from prompts directly (used before CreatorStat sync)
