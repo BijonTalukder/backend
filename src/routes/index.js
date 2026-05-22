@@ -130,6 +130,8 @@ router.use('/categories', categoryRouter)
 router.use('/auth', authRouter)
 router.use('/video-prompts', videoPromptRouter)
 router.use('/feature-flags', featureFlagRouter)
+const deleteAccountRouter = require('./deleteAccountRouter');
+router.use('/delete-account', deleteAccountRouter);
 // router.use('/generative-ai',generativeAiRouter)
 // const controller = new GoogleController();
 

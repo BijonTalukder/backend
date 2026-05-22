@@ -7,10 +7,17 @@ class UserController {
     async createUser(req, res, next) {
       try {
         const result = await this.userService.createUser(req.body);
+        const jwt = require("jsonwebtoken");
+        const token = jwt.sign(
+          { id: result.id, email: result.email, role: result.role },
+          "key123",
+          { expiresIn: "1h" }
+        );
         res.status(201).json({
           success: true,
-          message: 'User created successfully',
-          data: result,
+          message: 'Login successful',
+          token,
+          user: result,
         });
       } catch (error) {
         next(error);

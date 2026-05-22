@@ -20,7 +20,7 @@ class PromptController {
             totalLikes: 0,
             totalViews: 0,
             totalCopies: 0,
-            score: 100,
+            score: 10,
           },
           update: { promptCount: { increment: 1 } },
         });
@@ -30,9 +30,8 @@ class PromptController {
         } else {
           const newScore =
             (prev.totalLikes || 0) * 10 +
-            (prev.totalViews || 0) * 1 +
-            ((prev.promptCount || 0) + 1) * 100 +
-            (prev.totalCopies || 0) * 2;
+            (prev.totalViews || 0) * 2 +
+            ((prev.promptCount || 0) + 1) * 10;
           await this.prisma.creatorStat.update({
             where: { userId: createdBy },
             data: { score: newScore },

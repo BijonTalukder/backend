@@ -41,7 +41,7 @@ class V2UserService {
           location: u.location,
           joinedAt: u.createdAt,
           stats: { promptCount, totalLikes, totalViews, totalCopies },
-          score: totalLikes * 10 + totalViews * 1 + promptCount * 100 + totalCopies * 2,
+          score: totalLikes * 10 + totalViews * 2 + promptCount * 10,
         };
       }),
     );
@@ -124,7 +124,7 @@ class V2UserService {
       const totalLikes = prompts.reduce((sum, p) => sum + (p.likeCount || 0), 0);
       const totalViews = prompts.reduce((sum, p) => sum + (p.viewCount || 0), 0);
       const totalCopies = totalViews;
-      const score = totalLikes * 10 + totalViews * 1 + promptCount * 100 + totalCopies * 2;
+      const score = totalLikes * 10 + totalViews * 2 + promptCount * 10;
 
       await this.prisma.creatorStat.upsert({
         where: { userId: u.id },

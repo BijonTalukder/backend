@@ -62,9 +62,8 @@ class PromptInteractionService {
             };
             const newScore =
               next.totalLikes * 10 +
-              next.totalViews * 1 +
-              (prev.promptCount || 0) * 100 +
-              next.totalCopies * 2;
+              next.totalViews * 2 +
+              (prev.promptCount || 0) * 10;
 
             await this.prisma.creatorStat.update({
               where: { userId: prompt.createdBy },
