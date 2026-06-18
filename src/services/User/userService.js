@@ -12,6 +12,13 @@ class UserService extends BcryptHasher {
   // ✅ Create User
   async createUser(data) {
     try {
+      const existing = await this.prisma.user.findUnique({
+        where: { email: data.email.toLowerCase() },
+      });
+      if (existing) {
+        throw new Error("User already exists with this email");
+      }
+
       const hashedPassword = await this.hash(data.password, SALT_ROUNDS);
 
       const user = await this.prisma.user.create({

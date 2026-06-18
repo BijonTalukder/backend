@@ -20,10 +20,13 @@ class UserController {
           user: result,
         });
       } catch (error) {
+        if (error.message === "User already exists with this email") {
+          return res.status(409).json({ success: false, message: error.message });
+        }
         next(error);
       }
     }
-  
+
     // Get all users
     async getAllUsers(req, res, next) {
       try {

@@ -216,6 +216,8 @@ model VideoPrompt {
   viewCount Int      @default(0)
   likeCount Int      @default(0)
   category  String?
+  userName  String?
+  userAvatar String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
