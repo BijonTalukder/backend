@@ -209,13 +209,14 @@ class PromptService {
 
       const where = {
         ...platformWhere,
-        OR: [
-          { visibility: 'PUBLIC' },
-          { visibility: null },
-          ...(followingIds.length > 0
-            ? [{ visibility: 'FOLLOWERS_ONLY', createdBy: { in: followingIds } }]
-            : []),
-        ],
+        ...(followingIds.length === 0
+          ? { visibility: 'PUBLIC' }
+          : {
+              OR: [
+                { visibility: 'PUBLIC' },
+                { visibility: 'FOLLOWERS_ONLY', createdBy: { in: followingIds } },
+              ],
+            }),
       };
 
       const [data, total] = await Promise.all([
@@ -265,7 +266,7 @@ class PromptService {
 
         where = {
           createdBy: userId,
-          ...(isFollowing ? {} : { visibility: { in: ['PUBLIC', null] } }),
+          ...(isFollowing ? {} : { visibility: 'PUBLIC' }),
         };
       }
 

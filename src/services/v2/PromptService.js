@@ -83,13 +83,13 @@ class V2PromptService {
   }
 
   _buildVisibilityWhere(followingIds) {
+    if (followingIds.length === 0) {
+      return { visibility: 'PUBLIC' };
+    }
     return {
       OR: [
         { visibility: 'PUBLIC' },
-        { visibility: null },
-        ...(followingIds.length > 0
-          ? [{ visibility: 'FOLLOWERS_ONLY', createdBy: { in: followingIds } }]
-          : []),
+        { visibility: 'FOLLOWERS_ONLY', createdBy: { in: followingIds } },
       ],
     };
   }
@@ -109,10 +109,18 @@ class V2PromptService {
     const platformWhere = this._buildPlatformWhere(platform);
     const where = { ...visibilityWhere, ...platformWhere };
 
-    const [data, total] = await Promise.all([
-      this.prisma.prompt.findMany({ where, skip, take: limit, orderBy }),
-      this.prisma.prompt.count({ where }),
-    ]);
+    console.log('DEBUG getAllPrompts where:', JSON.stringify(where));
+
+    let data, total;
+    try {
+      [data, total] = await Promise.all([
+        this.prisma.prompt.findMany({ where, skip, take: limit, orderBy }),
+        this.prisma.prompt.count({ where }),
+      ]);
+    } catch (e) {
+      console.log('DEBUG v2 ERROR:', e.message);
+      throw e;
+    }
 
     return {
       data: await this.attachCreators(data),
@@ -173,7 +181,7 @@ class V2PromptService {
       if (followingIds.includes(userId)) {
         // can see all
       } else {
-        where.visibility = { in: ['PUBLIC', null] };
+        where.visibility = 'PUBLIC';
       }
     }
 
