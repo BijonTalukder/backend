@@ -86,6 +86,7 @@ class V2PromptService {
     return {
       OR: [
         { visibility: 'PUBLIC' },
+        { visibility: null },
         ...(followingIds.length > 0
           ? [{ visibility: 'FOLLOWERS_ONLY', createdBy: { in: followingIds } }]
           : []),
@@ -172,7 +173,7 @@ class V2PromptService {
       if (followingIds.includes(userId)) {
         // can see all
       } else {
-        where.visibility = 'PUBLIC';
+        where.visibility = { in: ['PUBLIC', null] };
       }
     }
 

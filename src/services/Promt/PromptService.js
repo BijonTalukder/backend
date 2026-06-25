@@ -211,6 +211,7 @@ class PromptService {
         ...platformWhere,
         OR: [
           { visibility: 'PUBLIC' },
+          { visibility: null },
           ...(followingIds.length > 0
             ? [{ visibility: 'FOLLOWERS_ONLY', createdBy: { in: followingIds } }]
             : []),
@@ -264,7 +265,7 @@ class PromptService {
 
         where = {
           createdBy: userId,
-          ...(isFollowing ? {} : { visibility: 'PUBLIC' }),
+          ...(isFollowing ? {} : { visibility: { in: ['PUBLIC', null] } }),
         };
       }
 
