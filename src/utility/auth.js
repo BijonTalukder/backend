@@ -1,21 +1,19 @@
-const TokenHandler = require("./tokenHandler");
+const jwt = require("jsonwebtoken");
 
-const auth =(req,res,next)=>{
+const auth = (req, res, next) => {
     const token = req.headers.authorization?.split(' ')[1];
     if (!token) {
         return res.status(401).json({ message: 'No token provided' });
     }
-   const tokenHandler = new TokenHandler();
-   const decode=  tokenHandler.verifyToken(token,"key123");
-   console.log(decode);
-    if (!decode) {
-        return res.status(401).json({ message: 'Invalid token' });
+    try {
+        const decode = jwt.verify(token, "key123");
+        if (!decode) {
+            return res.status(401).json({ message: 'Invalid token' });
+        }
+        req.user = decode;
+        next();
+    } catch (e) {
+        return res.status(401).json({ message: 'Token verification failed' });
     }
-   
-   req.user=decode;
-
-    next();
-   
-
 }
 module.exports = auth;
