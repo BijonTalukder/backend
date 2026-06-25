@@ -57,7 +57,7 @@ class V2UserService {
     };
   }
 
-  async getProfile(userId) {
+  async getProfile(userId, currentUserId) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       select: {
@@ -69,12 +69,27 @@ class V2UserService {
 
     if (!user) return null;
 
-    const stat = await this.prisma.creatorStat.findUnique({
-      where: { userId },
-    });
+    const [stat, followersCount, followingCount, isFollowing] = await Promise.all([
+      this.prisma.creatorStat.findUnique({ where: { userId } }),
+      this.prisma.follow.count({ where: { followingId: userId } }),
+      this.prisma.follow.count({ where: { followerId: userId } }),
+      currentUserId
+        ? this.prisma.follow.findUnique({
+            where: {
+              followerId_followingId: {
+                followerId: currentUserId,
+                followingId: userId,
+              },
+            },
+          })
+        : Promise.resolve(null),
+    ]);
 
     return {
       ...user,
+      followersCount,
+      followingCount,
+      isFollowing: !!isFollowing,
       stats: stat
         ? {
             promptCount: stat.promptCount,
@@ -105,6 +120,90 @@ class V2UserService {
       .map(([categoryId, count]) => ({ categoryId, count }));
 
     return sorted;
+  }
+
+  async follow(followerId, followingId) {
+    if (followerId === followingId) throw new Error('Cannot follow yourself');
+    const existing = await this.prisma.follow.findUnique({
+      where: { followerId_followingId: { followerId, followingId } },
+    });
+    if (existing) return { alreadyFollowing: true };
+    await this.prisma.follow.create({
+      data: { followerId, followingId },
+    });
+    return { alreadyFollowing: false };
+  }
+
+  async unfollow(followerId, followingId) {
+    try {
+      await this.prisma.follow.delete({
+        where: { followerId_followingId: { followerId, followingId } },
+      });
+    } catch (e) {
+      throw new Error('Not following this user');
+    }
+  }
+
+  async getFollowers(userId, page, limit, currentUserId) {
+    const skip = (page - 1) * limit;
+    const [data, total] = await Promise.all([
+      this.prisma.follow.findMany({
+        where: { followingId: userId },
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          follower: {
+            select: {
+              id: true, name: true, email: true, avatar: true,
+              profession: true, bio: true, location: true, createdAt: true,
+            },
+          },
+        },
+      }),
+      this.prisma.follow.count({ where: { followingId: userId } }),
+    ]);
+
+    const followers = data.map((f) => ({
+      ...f.follower,
+      followedAt: f.createdAt,
+    }));
+
+    return {
+      data: followers,
+      meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+    };
+  }
+
+  async getFollowing(userId, page, limit, currentUserId) {
+    const skip = (page - 1) * limit;
+    const [data, total] = await Promise.all([
+      this.prisma.follow.findMany({
+        where: { followerId: userId },
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          following: {
+            select: {
+              id: true, name: true, email: true, avatar: true,
+              profession: true, bio: true, location: true, createdAt: true,
+            },
+          },
+        },
+      }),
+      this.prisma.follow.count({ where: { followerId: userId } }),
+    ]);
+
+    const following = data.map((f) => ({
+      ...f.following,
+      followedAt: f.createdAt,
+    }));
+
+    return {
+      data: following,
+      meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+    };
   }
 
   async syncCreatorStats() {

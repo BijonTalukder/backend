@@ -27,6 +27,7 @@ const generativeAiRouter = require('./generativeAiRouter');
 const authRouter = require('./authRouter');
 const videoPromptRouter = require('./videoPromptRouter');
 const featureFlagRouter = require('./featureFlagRouter');
+const followRouter = require('./followRouter');
 // const GoogleController = require('../controllers/googleController');
 const router = express.Router();
 
@@ -130,6 +131,7 @@ router.use('/categories', categoryRouter)
 router.use('/auth', authRouter)
 router.use('/video-prompts', videoPromptRouter)
 router.use('/feature-flags', featureFlagRouter)
+router.use('/follow', followRouter)
 const deleteAccountRouter = require('./deleteAccountRouter');
 router.use('/delete-account', deleteAccountRouter);
 // router.use('/generative-ai',generativeAiRouter)

@@ -42,6 +42,19 @@ router.get('/top-creators', ctrl.getTopCreators);
 // GET /api/v2/profile/:id
 router.get('/profile/:id', ctrl.getProfile);
 
+// ── Follow / Unfollow ─────────────────────────────────────
+// POST /api/v2/follow/:userId  (auth)
+router.post('/follow/:userId', ctrl.follow);
+
+// DELETE /api/v2/follow/:userId  (auth)
+router.delete('/follow/:userId', ctrl.unfollow);
+
+// GET /api/v2/follow/followers/:userId
+router.get('/follow/followers/:userId', ctrl.getFollowers);
+
+// GET /api/v2/follow/following/:userId
+router.get('/follow/following/:userId', ctrl.getFollowing);
+
 // ── Sync ───────────────────────────────────────────────────
 // POST /api/v2/sync/creator-stats (one-time, populates CreatorStat from existing data)
 router.post('/sync/creator-stats', ctrl.syncCreatorStats);

@@ -12,6 +12,7 @@ class V2PromptService {
       aiPlatforms: p.aiPlatforms,
       categoryId: p.categoryId,
       tags: p.tags,
+      visibility: p.visibility,
       createdAt: p.createdAt,
       updatedAt: p.updatedAt,
       isLocked: p.isLocked,
@@ -65,30 +66,35 @@ class V2PromptService {
     });
   }
 
-  async getAllPrompts(page, limit, sortBy) {
-    const skip = (page - 1) * limit;
-    let orderBy;
-    switch (sortBy) {
-      case 'likes': orderBy = { likeCount: 'desc' }; break;
-      case 'copies': orderBy = { viewCount: 'desc' }; break;
-      case 'newest': orderBy = { createdAt: 'desc' }; break;
-      default: orderBy = [{ viewCount: 'desc' }, { createdAt: 'desc' }]; break;
-    }
+  async _getFollowingIds(userId) {
+    if (!userId) return [];
+    const following = await this.prisma.follow.findMany({
+      where: { followerId: userId },
+      select: { followingId: true },
+    });
+    return following.map((f) => f.followingId);
+  }
 
-    const [data, total] = await Promise.all([
-      this.prisma.prompt.findMany({ skip, take: limit, orderBy }),
-      this.prisma.prompt.count(),
-    ]);
+  _buildPlatformWhere(platform) {
+    if (!platform || platform === 'all') return {};
+    if (platform === 'web') return { platform: { in: ['ALL', 'WEB'] } };
+    if (platform === 'mobile') return { platform: { in: ['ALL', 'MOBILE'] } };
+    return {};
+  }
 
+  _buildVisibilityWhere(followingIds) {
     return {
-      data: await this.attachCreators(data),
-      meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+      OR: [
+        { visibility: 'PUBLIC' },
+        ...(followingIds.length > 0
+          ? [{ visibility: 'FOLLOWERS_ONLY', createdBy: { in: followingIds } }]
+          : []),
+      ],
     };
   }
 
-  async getPromptsByCategory(page, limit, categoryId, sortBy) {
+  async getAllPrompts(page, limit, sortBy, currentUserId, platform) {
     const skip = (page - 1) * limit;
-    const where = { categoryId };
     let orderBy;
     switch (sortBy) {
       case 'likes': orderBy = { likeCount: 'desc' }; break;
@@ -96,6 +102,11 @@ class V2PromptService {
       case 'newest': orderBy = { createdAt: 'desc' }; break;
       default: orderBy = [{ viewCount: 'desc' }, { createdAt: 'desc' }]; break;
     }
+
+    const followingIds = await this._getFollowingIds(currentUserId);
+    const visibilityWhere = this._buildVisibilityWhere(followingIds);
+    const platformWhere = this._buildPlatformWhere(platform);
+    const where = { ...visibilityWhere, ...platformWhere };
 
     const [data, total] = await Promise.all([
       this.prisma.prompt.findMany({ where, skip, take: limit, orderBy }),
@@ -108,22 +119,74 @@ class V2PromptService {
     };
   }
 
-  async getPromptById(id) {
+  async getPromptsByCategory(page, limit, categoryId, sortBy, currentUserId, platform) {
+    const skip = (page - 1) * limit;
+    let orderBy;
+    switch (sortBy) {
+      case 'likes': orderBy = { likeCount: 'desc' }; break;
+      case 'copies': orderBy = { viewCount: 'desc' }; break;
+      case 'newest': orderBy = { createdAt: 'desc' }; break;
+      default: orderBy = [{ viewCount: 'desc' }, { createdAt: 'desc' }]; break;
+    }
+
+    const followingIds = await this._getFollowingIds(currentUserId);
+    const visibilityWhere = this._buildVisibilityWhere(followingIds);
+    const platformWhere = this._buildPlatformWhere(platform);
+    const where = { ...visibilityWhere, categoryId, ...platformWhere };
+
+    const [data, total] = await Promise.all([
+      this.prisma.prompt.findMany({ where, skip, take: limit, orderBy }),
+      this.prisma.prompt.count({ where }),
+    ]);
+
+    return {
+      data: await this.attachCreators(data),
+      meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+    };
+  }
+
+  async getPromptById(id, currentUserId) {
     const p = await this.prisma.prompt.findUnique({ where: { id } });
     if (!p) return null;
+
+    if (p.visibility === 'FOLLOWERS_ONLY') {
+      if (!currentUserId) return null;
+      if (p.createdBy === currentUserId) {
+        // owner can see
+      } else {
+        const followingIds = await this._getFollowingIds(currentUserId);
+        if (!followingIds.includes(p.createdBy)) return null;
+      }
+    }
+
     const results = await this.attachCreators([p]);
     return results[0];
   }
 
-  async getPromptsByUser(userId) {
+  async getPromptsByUser(userId, currentUserId, platform) {
+    const isOwner = currentUserId === userId;
+
+    let where = { createdBy: userId };
+    if (!isOwner) {
+      const followingIds = await this._getFollowingIds(currentUserId);
+      if (followingIds.includes(userId)) {
+        // can see all
+      } else {
+        where.visibility = 'PUBLIC';
+      }
+    }
+
+    const platformWhere = this._buildPlatformWhere(platform);
+    where = { ...where, ...platformWhere };
+
     const data = await this.prisma.prompt.findMany({
-      where: { createdBy: userId },
+      where,
       orderBy: { createdAt: 'desc' },
     });
     return this.attachCreators(data);
   }
 
-  async getRecommendedPrompts(ip, page, limit) {
+  async getRecommendedPrompts(ip, page, limit, currentUserId, platform) {
     const skip = (page - 1) * limit;
 
     const interactions = await this.prisma.promptInteraction.findMany({
@@ -133,7 +196,7 @@ class V2PromptService {
     });
 
     if (interactions.length === 0) {
-      return this.getAllPrompts(page, limit, 'newest');
+      return this.getAllPrompts(page, limit, 'newest', currentUserId, platform);
     }
 
     const promptIds = [...new Set(interactions.map((i) => i.promptId))];
@@ -155,17 +218,22 @@ class V2PromptService {
       .map(([id]) => id);
 
     if (sortedCats.length === 0) {
-      return this.getAllPrompts(page, limit, 'newest');
+      return this.getAllPrompts(page, limit, 'newest', currentUserId, platform);
     }
+
+    const followingIds = await this._getFollowingIds(currentUserId);
+    const visibilityWhere = this._buildVisibilityWhere(followingIds);
+    const platformWhere = this._buildPlatformWhere(platform);
+    const where = { ...visibilityWhere, categoryId: { in: sortedCats }, ...platformWhere };
 
     const [data, total] = await Promise.all([
       this.prisma.prompt.findMany({
-        where: { categoryId: { in: sortedCats } },
+        where,
         skip,
         take: limit,
         orderBy: [{ viewCount: 'desc' }, { createdAt: 'desc' }],
       }),
-      this.prisma.prompt.count({ where: { categoryId: { in: sortedCats } } }),
+      this.prisma.prompt.count({ where }),
     ]);
 
     return {

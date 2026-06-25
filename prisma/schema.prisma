@@ -19,6 +19,17 @@ enum Role {
   admin
 }
 
+enum Visibility {
+  PUBLIC
+  FOLLOWERS_ONLY
+}
+
+enum Platform {
+  ALL
+  WEB
+  MOBILE
+}
+
 model User {
   id              String               @id @default(auto()) @map("_id") @db.ObjectId
   firebaseUid     String?
@@ -39,6 +50,9 @@ model User {
   avatar            String?
   resetToken        String?
   resetTokenExpiry  DateTime?
+
+  followers Follow[] @relation("FollowingRelation") // Users who follow this user
+  following Follow[] @relation("FollowerRelation")  // Users this user follows
 }
 
 model UserAreaPermission {
@@ -90,7 +104,9 @@ model Prompt {
   viewCount   Int          @default(0)
   likeCount   Int          @default(0)
   shareCount  Int          @default(0)
-  interactions PromptInteraction[]  @relation("PromptToInteraction")
+  visibility    Visibility            @default(PUBLIC)
+  platform      Platform              @default(ALL)
+  interactions  PromptInteraction[]    @relation("PromptToInteraction")
 }
 
 model PromptInteraction {
@@ -100,6 +116,21 @@ model PromptInteraction {
   type      String // "view" | "like" | "share"
   createdAt DateTime @default(now())
   prompt Prompt @relation("PromptToInteraction", fields: [promptId], references: [id])
+}
+
+model Follow {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  followerId  String   @db.ObjectId
+  followingId String   @db.ObjectId
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  follower  User @relation("FollowerRelation", fields: [followerId], references: [id])
+  following User @relation("FollowingRelation", fields: [followingId], references: [id])
+
+  @@unique([followerId, followingId])
+  @@index([followerId])
+  @@index([followingId])
 }
 
 model CreatorStat {

@@ -66,6 +66,27 @@ const defaultFlags = [
     platform: 'android',
   },
   {
+    key: 'banner_ai_story_detail',
+    label: 'Banner - AI Story Detail',
+    description: 'Banner ad on the AI Story detail page',
+    enabled: true,
+    platform: 'android',
+  },
+  {
+    key: 'interstitial_ai_story_copy',
+    label: 'Interstitial on AI Story Copy',
+    description: 'Show interstitial ad when user copies from AI Story feed',
+    enabled: true,
+    platform: 'android',
+  },
+  {
+    key: 'interstitial_ai_story_detail_copy',
+    label: 'Interstitial on AI Story Detail Copy',
+    description: 'Show interstitial ad when user copies from AI Story detail page',
+    enabled: true,
+    platform: 'android',
+  },
+  {
     key: 'native_ads_enabled',
     label: 'Native Ads',
     description: 'Show native inline ads',
